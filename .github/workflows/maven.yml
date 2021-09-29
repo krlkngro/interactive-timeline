@@ -3,7 +3,7 @@
 
 name: Java CI with Maven
 
-on: [push, pull_request]
+on: [push]
 
 defaults:
   run:
@@ -24,9 +24,12 @@ jobs:
         cache: maven
     - name: Test with Maven
       run: mvn clean test
+    - name: Update version number
+      if: ${{ github.ref == 'refs/heads/main'}}
+      run: mvn versions:set -DnewVersion=$(date +"%y.%m.%d").${{ github.run_number }}
     - name: Build installer
       if: ${{ github.ref == 'refs/heads/main'}}
-      run: mvn clean versions:set -DnewVersion=$(date +"%y.%m.%d").${{ github.run_number }} javafx:jlink jpackage:jpackage
+      run: mvn javafx:jlink jpackage:jpackage
     - name: "Add installer to releases"
       if: ${{ github.ref == 'refs/heads/main'}}
       uses: "marvinpinto/action-automatic-releases@latest"
