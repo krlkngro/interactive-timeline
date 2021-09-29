@@ -24,8 +24,6 @@ jobs:
         cache: maven
     - name: Test with Maven
       run: mvn clean test
-    - name : TEMPORARY VERSION NUMBER TEST
-      run:  mvn clean versions:set -DnewVersion=$(date +"%y.%m.%d").${{ github.run_number }}
     - name: Build installer
       if: ${{ github.ref == 'refs/heads/main'}}
       run: mvn clean versions:set -DnewVersion=$(date +"%y.%m.%d").${{ github.run_number }} javafx:jlink jpackage:jpackage
