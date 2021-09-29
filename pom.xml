@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ee.ut</groupId>
     <artifactId>interactive-timeline</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.0.1</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
@@ -47,6 +47,25 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.panteleyev</groupId>
+                <artifactId>jpackage-maven-plugin</artifactId>
+                <version>1.5.1</version>
+
+                <configuration>
+                    <name>${project.name}</name>
+                    <appVersion>${project.version}</appVersion>
+                    <input>target/classes</input>
+                    <module>ee.ut/ee.ut.App</module>
+                    <runtimeImage>target/image</runtimeImage>
+                    <destination>target/dist</destination>
+                    <javaOptions>
+                        <option>--enable-preview</option>
+                        <option>-Dfile.encoding=UTF-8</option>
+                    </javaOptions>
+                    <winDirChooser>true</winDirChooser>
+                </configuration>
             </plugin>
         </plugins>
     </build>
