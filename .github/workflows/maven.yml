@@ -26,7 +26,7 @@ jobs:
       run: mvn clean test
     - name: Update version number
       if: ${{ github.ref == 'refs/heads/main'}}
-      run: mvn versions:set -DnewVersion=$(date +"%y.%m.%d").${{ github.run_number }}
+      run: mvn versions:set -DnewVersion=$(date +"%y.%m").${{ github.run_number }}
     - name: Build installer
       if: ${{ github.ref == 'refs/heads/main'}}
       run: mvn javafx:jlink jpackage:jpackage
