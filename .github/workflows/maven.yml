@@ -5,6 +5,10 @@ name: Java CI with Maven
 
 on: [push, pull_request]
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   build:
 
@@ -20,6 +24,8 @@ jobs:
         cache: maven
     - name: Test with Maven
       run: mvn clean test
+    - name : TEMPORARY VERSION NUMBER TEST
+      run:  mvn clean versions:set -DnewVersion=$(date +"%y.%m.%d").${{ github.run_number }}
     - name: Build installer
       if: ${{ github.ref == 'refs/heads/main'}}
       run: mvn clean versions:set -DnewVersion=$(date +"%y.%m.%d").${{ github.run_number }} javafx:jlink jpackage:jpackage
@@ -32,4 +38,4 @@ jobs:
           prerelease: true
           title: "Development Build"
           files: |
-            interactive-timeline*.exe
+            target/dist/interactive-timeline*.exe
