@@ -5,6 +5,10 @@ name: Java CI with Maven
 
 on: [push, pull_request]
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   build:
 
@@ -32,4 +36,4 @@ jobs:
           prerelease: true
           title: "Development Build"
           files: |
-            interactive-timeline*.exe
+            target/dist/interactive-timeline*.exe
