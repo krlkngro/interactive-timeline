@@ -1,4 +1,4 @@
-package dataObjects;
+package ee.ut.dataObjects;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package dataObjects;
+package ee.ut.dataObjects;
 
 public enum Type {
     TEXT,
