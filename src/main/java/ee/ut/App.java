@@ -9,7 +9,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -49,7 +48,6 @@ public class App extends Application {
 
     public static void startTimeline(boolean isNew) {
         Group root = new Group();
-        Scene scene = new Scene(root, 600, 500, Color.WHITE);
         if (isNew) {
             data = new Data();
         } else {

@@ -20,16 +20,16 @@ public class EventsControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void HTMLEditorStartsInvisible() {
-        Assert.assertFalse(lookup("#htmlEditor").query().isVisible());
-        Assert.assertFalse(lookup("#htmlEditor").query().isManaged());
+    public void eventEditorStartsInvisible() {
+        Assert.assertFalse(lookup("#editor").query().isVisible());
+        Assert.assertFalse(lookup("#editor").query().isManaged());
     }
 
     @Test
     public void HTMLEditorBecomesVisibleOnceNewEventButtonClicked() {
         lookup("#newEventButton").queryButton().fire();
-        Assert.assertTrue(lookup("#htmlEditor").query().isVisible());
-        Assert.assertTrue(lookup("#htmlEditor").query().isManaged());
+        Assert.assertTrue(lookup("#editor").query().isVisible());
+        Assert.assertTrue(lookup("#editor").query().isManaged());
     }
 
 }

@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.web.HTMLEditor;
 
 import static ee.ut.App.getData;
@@ -23,6 +24,12 @@ public class EventsController {
 
     @FXML
     private HTMLEditor htmlEditor;
+
+    @FXML
+    private VBox events;
+
+    @FXML
+    private VBox editor;
 
     @FXML
     private void newEvent() {
@@ -77,8 +84,7 @@ public class EventsController {
     }
 
     private void toggleAll() {
-        toggle(htmlEditor);
-        toggle(newEventButton);
-        toggle(saveButton);
+        toggle(events);
+        toggle(editor);
     }
 }
