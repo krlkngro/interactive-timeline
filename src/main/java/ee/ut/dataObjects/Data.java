@@ -1,11 +1,19 @@
 package ee.ut.dataObjects;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Data {
     private Type labelType;
     private int eventSpace; // space between two events
     private List<Event> events;
+
+    public Data() {
+        // todo discuss reasonable default values
+        this.labelType = Type.LINE;
+        this.eventSpace = 200;
+        this.events = new ArrayList<>();
+    }
 
     public Data(Type labelType, int eventSpace, List<Event> events) {
         this.labelType = labelType;
