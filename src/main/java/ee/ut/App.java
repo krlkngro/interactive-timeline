@@ -23,11 +23,10 @@ public class App extends Application {
     private static Tab eventsTab;
     private static Data data;
 
-    private static Stage stage;
+    private static Scene scene;
 
     @Override
     public void start(Stage stage) throws IOException {
-        App.stage = stage;
         settingsTab = new Tab();
         settingsTab.setText("Sätted");
         settingsTab.setClosable(false);
@@ -38,7 +37,7 @@ public class App extends Application {
         eventsTab.setClosable(false);
         eventsTab.setContent(loadFXML("events"));
 
-        Scene scene = new Scene(loadFXML("primary"), 640, 480);
+        scene = new Scene(loadFXML("primary"), 640, 480);
         stage.setScene(scene);
         stage.show();
     }
@@ -65,7 +64,7 @@ public class App extends Application {
         borderPane.prefWidthProperty().bind(scene.widthProperty());
         borderPane.setCenter(tabPane);
         root.getChildren().add(borderPane);
-        stage.setScene(scene);
+        scene.setRoot(root);
     }
 
     public static void main(String[] args) {
@@ -74,6 +73,10 @@ public class App extends Application {
 
     static Data getData() {
         return data;
+    }
+
+    public Scene getScene() {
+        return scene;
     }
 
 }

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.web.HTMLEditor?>
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ee.ut.EventsController">
+    <children>
+        <Button fx:id="newEventButton" text="Lisa uus sündmus" onAction="#newEvent"/>
+        <HTMLEditor visible="false" managed="false" fx:id="htmlEditor"/>
+        <Button fx:id="saveButton" text="Salvesta" visible="false" managed="false" onAction="#save"/>
+    </children>
+</VBox>
