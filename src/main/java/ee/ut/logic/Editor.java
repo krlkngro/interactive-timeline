@@ -39,6 +39,10 @@ public class Editor {
             for (Event event: data.getEvents()) {
                 event.setPacked(true);
             }
+        }else {
+            for (Event event: data.getEvents()) {
+                event.setPacked(false);
+            }
         }
 
     }
