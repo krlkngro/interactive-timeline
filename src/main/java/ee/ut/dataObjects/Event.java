@@ -1,4 +1,4 @@
-package dataObjects;
+package ee.ut.dataObjects;
 
 public class Event {
     private Boolean hidden;
@@ -8,6 +8,17 @@ public class Event {
     private int maxHeight;
     private int width;
     private Boolean placedLeft;
+
+    public Event() {
+        //todo discuss reasonable default values, figure out a way to set defaults based on general settings
+        this.hidden = false;
+        this.htmlContent = "<p style=\"font-family: 'Rubik';\">Insert text here</p>";
+        this.queueNr = 1;
+        this.label = "";
+        this.maxHeight = 200;
+        this.width = 200;
+        this.placedLeft = true;
+    }
 
     public Event(Boolean hidden, int queueNr, String label, String htmlContent, int maxHeight, int width, Boolean placedLeft) {
         this.hidden = hidden;
