@@ -13,7 +13,7 @@ public class Event {
         //todo discuss reasonable default values, figure out a way to set defaults based on general settings
         this.hidden = false;
         this.htmlContent = "<p style=\"font-family: 'Rubik';\">Insert text here</p>";
-        this.queueNr = 0;
+        this.queueNr = 1;
         this.label = "";
         this.maxHeight = 200;
         this.width = 200;
