@@ -21,7 +21,8 @@ public class Event {
         this.packed = false;
     }
 
-    public Event(int queueNr, String label, String htmlContent, int maxHeight, int width, Boolean placedLeft, Boolean packed) {
+    public Event(Boolean packed, int queueNr, String label, String htmlContent, int maxHeight, int width, Boolean placedLeft) {
+        this.packed = packed;
         this.queueNr = queueNr;
         this.label = label;
         this.htmlContent = htmlContent;
