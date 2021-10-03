@@ -1,17 +1,20 @@
 package ee.ut;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.ut.dataObjects.Data;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 /**
  * JavaFX App
@@ -56,10 +59,23 @@ public class App extends Application {
         }
 
         TabPane tabPane = new TabPane(settingsTab, eventsTab);
-
+        MenuBar menuBar = new MenuBar();
+        Menu fileMenu = new Menu("file");
+        MenuItem saveFile = new MenuItem("Salvesta ajajoon");
+        saveFile.setOnAction(event -> {
+            Path file = Path.of(System.getProperty("user.dir")+"\\result\\data.js");
+            try {
+                Files.writeString(file, "const data = "+new ObjectMapper().writeValueAsString(data), StandardOpenOption.WRITE, StandardOpenOption.CREATE);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        fileMenu.getItems().add(saveFile);
+        menuBar.getMenus().add(fileMenu);
         BorderPane borderPane = new BorderPane();
         borderPane.prefHeightProperty().bind(scene.heightProperty());
         borderPane.prefWidthProperty().bind(scene.widthProperty());
+        borderPane.setTop(menuBar);
         borderPane.setCenter(tabPane);
         root.getChildren().add(borderPane);
         scene.setRoot(root);

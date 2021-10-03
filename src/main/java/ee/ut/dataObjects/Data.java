@@ -10,7 +10,7 @@ public class Data {
 
     public Data() {
         // todo discuss reasonable default values
-        this.labelType = Type.LINE;
+        this.labelType = Type.TEXT;
         this.eventSpace = 200;
         this.events = new ArrayList<>();
     }
