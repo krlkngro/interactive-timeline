@@ -26,4 +26,20 @@ public class Editor {
         }
         event.setLabel(label);
     }
+
+    public static void saveSettings(
+            Data data,
+            String labelType,
+            String eventSpace,
+            Boolean eventsPacked
+    ){
+        data.setEventSpace(Integer.valueOf(eventSpace));
+        data.setLabelType(labelType);
+        if(eventsPacked){
+            for (Event event: data.getEvents()) {
+                event.setPacked(true);
+            }
+        }
+
+    }
 }

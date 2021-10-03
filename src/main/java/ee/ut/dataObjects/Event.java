@@ -8,6 +8,8 @@ public class Event {
     private int maxHeight;
     private int width;
     private Boolean placedLeft;
+    private Boolean packed;
+
 
     public Event() {
         //todo discuss reasonable default values, figure out a way to set defaults based on general settings
@@ -18,6 +20,7 @@ public class Event {
         this.maxHeight = 200;
         this.width = 200;
         this.placedLeft = true;
+        this.packed = false;
     }
 
     public Event(Boolean hidden, int queueNr, String label, String htmlContent, int maxHeight, int width, Boolean placedLeft) {
@@ -85,4 +88,8 @@ public class Event {
     public void setPlacedLeft(Boolean placedLeft) {
         this.placedLeft = placedLeft;
     }
+
+    public Boolean getPacked() { return packed; }
+
+    public void setPacked(Boolean packed) { this.packed = packed; }
 }
