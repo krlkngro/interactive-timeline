@@ -6,6 +6,9 @@ import ee.ut.dataObjects.Event;
 import java.util.List;
 
 public class Editor {
+
+    private static Boolean allEventsPacked = false;
+
     public static void saveEvent(
             Data data,
             Event event,
@@ -25,6 +28,7 @@ public class Editor {
             }
         }
         event.setLabel(label);
+        event.setPacked(allEventsPacked);
     }
 
     public static void saveSettings(
@@ -33,14 +37,17 @@ public class Editor {
             String eventSpace,
             Boolean eventsPacked
     ){
+
         data.setEventSpace(Integer.valueOf(eventSpace));
         data.setLabelType(labelType);
         if(eventsPacked){
-            for (Event event: data.getEvents()) {
+            allEventsPacked = true; //for future events
+            for (Event event: data.getEvents()) { //change all existing events
                 event.setPacked(true);
             }
         }else {
-            for (Event event: data.getEvents()) {
+            allEventsPacked = false; //for future events
+            for (Event event: data.getEvents()) { //change all existing events
                 event.setPacked(false);
             }
         }
