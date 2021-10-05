@@ -25,8 +25,21 @@ public class Data {
         return labelType;
     }
 
-    public void setLabelType(Type labelType) {
-        this.labelType = labelType;
+    public void setLabelType(String labelType) {
+        switch(labelType){
+            case "Tekst":
+                this.labelType = Type.TEXT;
+                break;
+            case "Joon":
+                this.labelType = Type.LINE;
+                break;
+            case "Punkt":
+                this.labelType = Type.DOT;
+                break;
+            default:
+                this.labelType = Type.LINE;
+                break;
+        }
     }
 
     public int getEventSpace() {

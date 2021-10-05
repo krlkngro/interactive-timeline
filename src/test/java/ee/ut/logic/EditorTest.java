@@ -5,9 +5,10 @@ import ee.ut.dataObjects.Event;
 import ee.ut.dataObjects.Type;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class EditorTest {
     @Test
@@ -96,6 +97,110 @@ public class EditorTest {
         assertEquals("testLabel", savedEvent.getLabel());
         assertEquals(2, savedEvent.getQueueNr());
         assertEquals(event, savedEvent);
+    }
+
+    @Test
+    public void savingSettingsSavesCorrectLabelType() {
+        Data data = new Data();
+        assertEquals(Type.LINE, data.getLabelType());
+        Editor.saveSettings(
+                data,
+                "Punkt",
+                "300",
+                true
+        );
+        assertEquals(Type.DOT, data.getLabelType());
+    }
+
+    @Test
+    public void savingSettingsSavesCorrectEventSpace() {
+        Data data = new Data();
+        assertEquals(200, data.getEventSpace());
+        Editor.saveSettings(
+                data,
+                "Punkt",
+                "300",
+                true
+        );
+        assertEquals(300, data.getEventSpace());
+    }
+
+    @Test
+    public void enablingEventsPackedChangesPackedValueForExistingEvents() {
+        Event event = new Event();
+        Event event1 = new Event();
+        Data data = new Data(Type.TEXT, 200, Arrays.asList(event, event1));
+        for (Event e : data.getEvents()) {
+            assertFalse(e.getPacked());
+        }
+        Editor.saveSettings(
+                data,
+                "Punkt",
+                "300",
+                true
+        );
+        for (Event e : data.getEvents()) {
+            assertTrue(e.getPacked());
+        }
+    }
+
+    @Test
+    public void disablingEventsPackedChangesPackedValueForExistingEvents() {
+        Data data = new Data();
+        Event event = new Event();
+        event.setPacked(true);
+        data.getEvents().add(event);
+        Editor.saveSettings(
+                data,
+                "Joon",
+                "200",
+                false
+        );
+        for (Event e : data.getEvents()) {
+            assertFalse(e.getPacked());
+        }
+    }
+
+    @Test
+    public void savingSettingsChangesPackedValueForNewEvents() {
+        Data data = new Data();
+        Editor.saveSettings(
+                data,
+                "Joon",
+                "200",
+                false
+        );
+        Event event = new Event();
+        Editor.saveEvent(
+                data,
+                event,
+                "testHtml",
+                "testLabel",
+                1,
+                true
+        );
+        for (Event e : data.getEvents()) {
+            assertFalse(e.getPacked());
+        }
+        Editor.saveSettings(
+                data,
+                "Punkt",
+                "300",
+                true
+        );
+        Event event1 = new Event();
+        Editor.saveEvent(
+                data,
+                event1,
+                "testHtml",
+                "testLabel",
+                1,
+                true
+        );
+        for (Event e : data.getEvents()) {
+            assertTrue(e.getPacked());
+        }
+
     }
 
 }
