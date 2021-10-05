@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.web.HTMLEditor?>
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ee.ut.EventsController">
+    <children>
+        <VBox fx:id="events" alignment="CENTER">
+            <Button fx:id="newEventButton" text="Lisa uus sündmus" onAction="#newEvent"/>
+        </VBox>
+        <VBox visible="false" managed="false" fx:id="editor" alignment="CENTER">
+            <HBox>
+                <Label text="Sündmuse tähis ajajoonel:"/>
+                <TextField promptText="tähis" fx:id="label"/>
+                <Label text="Sündmuse järjekorranumber:"/>
+                <Spinner fx:id="queueNr">
+                    <valueFactory>
+                        <SpinnerValueFactory.IntegerSpinnerValueFactory/>
+                    </valueFactory>
+                </Spinner>
+            </HBox>
+
+            <HTMLEditor fx:id="htmlEditor"/>
+            <HBox alignment="CENTER">
+                <Button fx:id="saveButton" text="Salvesta" onAction="#save"/>
+                <Button fx:id="cancelButton" text="Katkesta" onAction="#cancel"/>
+            </HBox>
+        </VBox>
+    </children>
+</VBox>
