@@ -145,6 +145,23 @@ public class EditorTest {
     }
 
     @Test
+    public void disablingEventsPackedChangesPackedValueForExistingEvents() {
+        Data data = new Data();
+        Event event = new Event();
+        event.setPacked(true);
+        data.getEvents().add(event);
+        Editor.saveSettings(
+                data,
+                "Joon",
+                "200",
+                false
+        );
+        for (Event e : data.getEvents()) {
+            assertEquals(false, e.getPacked());
+        }
+    }
+
+    @Test
     public void savingSettingsChangesPackedValueForNewEvents() {
         Data data = new Data();
         Editor.saveSettings(
