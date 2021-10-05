@@ -8,7 +8,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class EditorTest {
     @Test
@@ -131,7 +131,7 @@ public class EditorTest {
         Event event1 = new Event();
         Data data = new Data(Type.TEXT, 200, Arrays.asList(event, event1));
         for (Event e : data.getEvents()) {
-            assertEquals(false, e.getPacked());
+            assertFalse(e.getPacked());
         }
         Editor.saveSettings(
                 data,
@@ -140,7 +140,7 @@ public class EditorTest {
                 true
         );
         for (Event e : data.getEvents()) {
-            assertEquals(true, e.getPacked());
+            assertTrue(e.getPacked());
         }
     }
 
@@ -157,7 +157,7 @@ public class EditorTest {
                 false
         );
         for (Event e : data.getEvents()) {
-            assertEquals(false, e.getPacked());
+            assertFalse(e.getPacked());
         }
     }
 
@@ -180,7 +180,7 @@ public class EditorTest {
                 true
         );
         for (Event e : data.getEvents()) {
-            assertEquals(false, e.getPacked());
+            assertFalse(e.getPacked());
         }
         Editor.saveSettings(
                 data,
@@ -198,7 +198,7 @@ public class EditorTest {
                 true
         );
         for (Event e : data.getEvents()) {
-            assertEquals(true, e.getPacked());
+            assertTrue(e.getPacked());
         }
 
     }
