@@ -18,5 +18,3 @@ const data =
 	"queueNr":3,"label":"",
 	"htmlContent":"<p style=\"font-family: 'Rubik';\">Insert text hereuoi</p>",
 	"maxHeight":200,"width":200,"placedLeft":true}]}
-	
-export { data };
