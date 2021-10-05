@@ -126,7 +126,7 @@ public class EditorTest {
     }
 
     @Test
-    public void savingSettingsChangesPackedValueForExistingEvents() {
+    public void enablingEventsPackedChangesPackedValueForExistingEvents() {
         Event event = new Event();
         Event event1 = new Event();
         Data data = new Data(Type.TEXT, 200, Arrays.asList(event, event1));
