@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.HTMLEditor?>
 <VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ee.ut.EventsController">
     <children>
         <VBox fx:id="events" alignment="CENTER">
+            <TableView fx:id="savedEvents">
+                <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
+                <columns>
+                    <TableColumn text="Järjekorranumber" maxWidth="200000">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="queueNr"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="Tähis" maxWidth="250000">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="label"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="Tekst" maxWidth="450000">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="text"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                </columns>
+            </TableView>
             <Button fx:id="newEventButton" text="Lisa uus sündmus" onAction="#newEvent"/>
         </VBox>
         <VBox visible="false" managed="false" fx:id="editor" alignment="CENTER">

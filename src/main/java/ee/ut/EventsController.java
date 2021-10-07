@@ -4,6 +4,7 @@ import ee.ut.dataObjects.Event;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -11,16 +12,22 @@ import javafx.scene.web.HTMLEditor;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ResourceBundle;
 
 import static ee.ut.App.getData;
+import static ee.ut.logic.Editor.deleteEvent;
 import static ee.ut.logic.Editor.saveEvent;
 
-public class EventsController {
+public class EventsController implements Initializable {
     private Event eventToEdit;
     private boolean editingNewEvent;
     private boolean editorInitialized = false;
+
+    @FXML
+    private TableView<Event> savedEvents;
 
     @FXML
     private Button saveButton;
@@ -45,9 +52,19 @@ public class EventsController {
 
     @FXML
     private void newEvent() {
-        toggleAll();
         this.eventToEdit = new Event();
         this.editingNewEvent = true;
+        startEdit();
+    }
+
+    private void editEvent(Event event) {
+        this.eventToEdit = event;
+        this.editingNewEvent = false;
+        startEdit();
+    }
+
+    private void startEdit() {
+        toggleAll();
         File css = new File(System.getProperty("user.dir")+"\\result\\style.css");
         String cssText = "";
         try {
@@ -71,6 +88,7 @@ public class EventsController {
         if (this.editingNewEvent) {
             queueValueFactory.setValue(getData().getEvents().size()+1);
         } else {
+            queueNr.getEditor().setText(String.valueOf(this.eventToEdit.getQueueNr()));
             queueValueFactory.setValue(this.eventToEdit.getQueueNr());
         }
         label.setText(this.eventToEdit.getLabel());
@@ -119,6 +137,7 @@ public class EventsController {
         this.queueNr.getEditor().setText("");
         this.queueNr.commitValue();
         toggleAll();
+        savedEvents.refresh();
     }
 
     @FXML
@@ -151,5 +170,54 @@ public class EventsController {
     private void toggleAll() {
         toggle(events);
         toggle(editor);
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        this.savedEvents.setItems(FXCollections.observableList(getData().getEvents()));
+        TableColumn<Event, Void> editButton = new TableColumn<>();
+        TableColumn<Event, Void> deleteButton = new TableColumn<>();
+        editButton.setCellFactory((param) -> new TableCell<>() {
+            private final Button button = new Button("Muuda");
+            {
+                button.setOnAction(event -> editEvent(getTableRow().getItem()));
+            }
+
+            @Override
+            public void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(button);
+                }
+            }
+        });
+        deleteButton.setCellFactory((param) -> new TableCell<>() {
+            private final Button button = new Button("Kustuta");
+            {
+                button.setOnAction(event -> {
+                    deleteEvent(getData(), getTableRow().getItem());
+                    savedEvents.refresh();
+                });
+            }
+
+            @Override
+            public void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(button);
+                }
+            }
+        });
+
+        //Currently the max width value is set with a syntax of "percentage value of the table width to cover" * 10000
+        // if a more reasonable way of achieving this is found, please replace this
+        editButton.setMaxWidth(100000);
+        deleteButton.setMaxWidth(100000);
+
+        savedEvents.getColumns().addAll(editButton, deleteButton);
     }
 }

@@ -29,16 +29,6 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        settingsTab = new Tab();
-        settingsTab.setText("Sätted");
-        settingsTab.setClosable(false);
-        settingsTab.setContent(loadFXML("settings"));
-
-        eventsTab = new Tab();
-        eventsTab.setText("Sündmused");
-        eventsTab.setClosable(false);
-        eventsTab.setContent(loadFXML("events"));
-
         scene = new Scene(loadFXML("primary"), 640, 480);
         stage.setScene(scene);
         stage.show();
@@ -49,7 +39,7 @@ public class App extends Application {
         return fxmlLoader.load();
     }
 
-    public static void startTimeline(boolean isNew) {
+    public static void startTimeline(boolean isNew) throws IOException {
         Group root = new Group();
         if (isNew) {
             data = new Data();
@@ -57,6 +47,16 @@ public class App extends Application {
             //todo implement loading data from js
             throw new IllegalArgumentException("Editing and existing timeline not yet implemented");
         }
+
+        settingsTab = new Tab();
+        settingsTab.setText("Sätted");
+        settingsTab.setClosable(false);
+        settingsTab.setContent(loadFXML("settings"));
+
+        eventsTab = new Tab();
+        eventsTab.setText("Sündmused");
+        eventsTab.setClosable(false);
+        eventsTab.setContent(loadFXML("events"));
 
         TabPane tabPane = new TabPane(settingsTab, eventsTab);
         MenuBar menuBar = new MenuBar();

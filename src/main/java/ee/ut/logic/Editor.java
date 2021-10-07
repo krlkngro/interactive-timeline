@@ -31,6 +31,10 @@ public class Editor {
         event.setPacked(allEventsPacked);
     }
 
+    public static void deleteEvent(Data data, Event event) {
+        data.getEvents().remove(event);
+    }
+
     public static void saveSettings(
             Data data,
             String labelType,
