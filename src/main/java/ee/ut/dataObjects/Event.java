@@ -4,9 +4,6 @@ public class Event {
     private int queueNr;
     private String label;
     private String htmlContent;
-    private int maxHeight;
-    private int width;
-    private Boolean placedLeft;
     private Boolean packed;
 
 
@@ -15,9 +12,6 @@ public class Event {
         this.htmlContent = "<p style=\"font-family: 'Rubik';\">Insert text here</p>";
         this.queueNr = 1;
         this.label = "";
-        this.maxHeight = 200;
-        this.width = 200;
-        this.placedLeft = true;
         this.packed = false;
     }
 
@@ -26,9 +20,6 @@ public class Event {
         this.queueNr = queueNr;
         this.label = label;
         this.htmlContent = htmlContent;
-        this.maxHeight = maxHeight;
-        this.width = width;
-        this.placedLeft = placedLeft;
     }
 
 
