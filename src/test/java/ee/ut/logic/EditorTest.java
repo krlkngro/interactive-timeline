@@ -5,6 +5,7 @@ import ee.ut.dataObjects.Event;
 import ee.ut.dataObjects.Type;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -201,6 +202,19 @@ public class EditorTest {
             assertTrue(e.getPacked());
         }
 
+    }
+
+    @Test
+    public void testDeletingEventRemovesItFromData() {
+        Data data = new Data();
+        Event event1 = new Event();
+        Event event2 = new Event();
+        data.setEvents(new ArrayList<>(Arrays.asList(event1, event2)));
+        assertEquals(2, data.getEvents().size());
+        Editor.deleteEvent(data, event1);
+        assertEquals(1, data.getEvents().size());
+        assertEquals(event2, data.getEvents().get(0));
+        assertNotEquals(event1, data.getEvents().get(0));
     }
 
 }
