@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.util.Objects;
 
 /**
  * JavaFX App
@@ -29,6 +29,14 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        Path resultFolder = Path.of(System.getProperty("user.dir")+"\\result");
+        if (!Files.exists(resultFolder)) {
+            Files.createDirectory(resultFolder);
+            Files.write(resultFolder.resolve("style.css"), Objects.requireNonNull(App.class.getResourceAsStream("style.css")).readAllBytes());
+            Files.write(resultFolder.resolve("testCSS.css"), Objects.requireNonNull(App.class.getResourceAsStream("testCSS.css")).readAllBytes());
+            Files.write(resultFolder.resolve("timeline.html"), Objects.requireNonNull(App.class.getResourceAsStream("timeline.html")).readAllBytes());
+            Files.write(resultFolder.resolve("timelineGenerator.js"), Objects.requireNonNull(App.class.getResourceAsStream("timelineGenerator.js")).readAllBytes());
+        }
         scene = new Scene(loadFXML("primary"), 640, 480);
         stage.setScene(scene);
         stage.show();
@@ -65,7 +73,7 @@ public class App extends Application {
         saveFile.setOnAction(event -> {
             Path file = Path.of(System.getProperty("user.dir")+"\\result\\data.js");
             try {
-                Files.writeString(file, "const data = "+new ObjectMapper().writeValueAsString(data), StandardOpenOption.WRITE, StandardOpenOption.CREATE);
+                Files.writeString(file, "const data = "+new ObjectMapper().writeValueAsString(data));
             } catch (IOException e) {
                 e.printStackTrace();
             }
