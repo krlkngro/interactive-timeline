@@ -9,11 +9,18 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 /**
@@ -29,7 +36,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        Path resultFolder = Path.of(System.getProperty("user.dir")+"\\result");
+        Path resultFolder = Path.of(System.getProperty("user.dir") + "\\result");
         if (!Files.exists(resultFolder)) {
             Files.createDirectory(resultFolder);
             Files.write(resultFolder.resolve("style.css"), Objects.requireNonNull(App.class.getResourceAsStream("style.css")).readAllBytes());
@@ -71,20 +78,54 @@ public class App extends Application {
         Menu fileMenu = new Menu("file");
         MenuItem saveFile = new MenuItem("Salvesta ajajoon");
         saveFile.setOnAction(event -> {
-            Path file = Path.of(System.getProperty("user.dir")+"\\result\\data.js");
+            Path file = Path.of(System.getProperty("user.dir") + "\\result\\data.js");
             try {
-                Files.writeString(file, "const data = "+new ObjectMapper().writeValueAsString(data));
+                Files.writeString(file, "const data = " + new ObjectMapper().writeValueAsString(data));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
+
+
+        Menu previewMenu = new Menu("eelvaade");
+        MenuItem showPreview = new MenuItem("kuva eelvaade");
+
+        showPreview.setOnAction(actionEvent -> {
+            Path path = Path.of(System.getProperty("user.dir") + "\\src\\main\\resources\\ee\\ut\\timeline.html");
+
+            String content;
+            try {
+                content = new String(Files.readAllBytes(path));
+                content = content.replaceAll("<script>.*</script>", "<script> const data = " + new ObjectMapper().writeValueAsString(data) + " </script>");
+
+                Files.writeString(path, content);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            WebView webView = new WebView();
+            WebEngine webEngine = webView.getEngine();
+            URL url = App.class.getResource("timeline.html");
+            webEngine.load(url.toString());
+            VBox vBox = new VBox(webView);
+
+            Scene scene = new Scene(vBox, 600, 400);
+            Stage stage = new Stage();
+            stage.setTitle("Eelvaade");
+            stage.setScene(scene);
+            stage.show();
+        });
+
         fileMenu.getItems().add(saveFile);
+        previewMenu.getItems().add(showPreview);
         menuBar.getMenus().add(fileMenu);
+        menuBar.getMenus().add(previewMenu);
         BorderPane borderPane = new BorderPane();
         borderPane.prefHeightProperty().bind(scene.heightProperty());
         borderPane.prefWidthProperty().bind(scene.widthProperty());
         borderPane.setTop(menuBar);
         borderPane.setCenter(tabPane);
+        //borderPane.setBottom(scrollPane);
         root.getChildren().add(borderPane);
         scene.setRoot(root);
     }
