@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -29,10 +29,11 @@ public class EditorTest {
     }
 
     @Test
-    public void savingExistingEventDoesNotAddEventToData() {
+    public void savingExistingEventDoesNotAddAdditionalEventToData() {
         Data data = new Data();
         Event event = new Event();
-        assertEquals(0, data.getEvents().size());
+        data.getEvents().add(event);
+        assertEquals(1, data.getEvents().size());
         Editor.saveEvent(
                 data,
                 event,
@@ -41,7 +42,7 @@ public class EditorTest {
                 1,
                 false
         );
-        assertEquals(0, data.getEvents().size());
+        assertEquals(1, data.getEvents().size());
     }
 
     @Test
@@ -62,19 +63,19 @@ public class EditorTest {
                 </html>
                 """,
                 "testLabel",
-                2,
+                1,
                 true
         );
         assertEquals("testHtml", event.getHtmlContent());
         assertEquals("testLabel", event.getLabel());
-        assertEquals(2, event.getQueueNr());
+        assertEquals(1, event.getQueueNr());
         assertEquals(event, data.getEvents().get(0));
     }
 
     @Test
     public void savingExistingEventSavesCorrectData() {
         Event event = new Event(false, 99, "TestTest", "TestTestHtml", 200, 200, false);
-        Data data = new Data(Type.TEXT, 200, Collections.singletonList(event));
+        Data data = new Data(Type.TEXT, 200, new ArrayList<>(List.of(event)));
         Editor.saveEvent(
                 data,
                 event,
@@ -89,16 +90,17 @@ public class EditorTest {
                 </html>
                 """,
                 "testLabel",
-                2,
+                1,
                 false
         );
         assertEquals(1, data.getEvents().size());
         Event savedEvent = data.getEvents().get(0);
         assertEquals("testHtml", savedEvent.getHtmlContent());
         assertEquals("testLabel", savedEvent.getLabel());
-        assertEquals(2, savedEvent.getQueueNr());
+        assertEquals(1, savedEvent.getQueueNr());
         assertEquals(event, savedEvent);
     }
+
 
     @Test
     public void savingSettingsSavesCorrectLabelType() {
@@ -217,4 +219,88 @@ public class EditorTest {
         assertNotEquals(event1, data.getEvents().get(0));
     }
 
+
+
+    @Test
+    public void movingElementToTheEndOfQueueChangesEventsListCorrectly() {
+        Data data = new Data();
+        Event event1 = new Event();
+        event1.setQueueNr(1);
+        Event event2 = new Event();
+        event1.setQueueNr(2);
+        Event event3 = new Event();
+        event1.setQueueNr(3);
+        Event event4 = new Event();
+        event1.setQueueNr(4);
+        data.setEvents(new ArrayList<>(Arrays.asList(event1, event2, event3, event4)));
+        Editor.saveEvent(data, event2, "", "", 4, false);
+        assertEquals(Arrays.asList(event1, event3, event4, event2), data.getEvents());
+        assertEquals(1, event1.getQueueNr());
+        assertEquals(2, event3.getQueueNr());
+        assertEquals(3, event4.getQueueNr());
+        assertEquals(4, event2.getQueueNr());
+    }
+
+
+    @Test
+    public void movingElementToTheStartOfQueueChangesEventsListCorrectly() {
+        Data data = new Data();
+        Event event1 = new Event();
+        event1.setQueueNr(1);
+        Event event2 = new Event();
+        event1.setQueueNr(2);
+        Event event3 = new Event();
+        event1.setQueueNr(3);
+        Event event4 = new Event();
+        event1.setQueueNr(4);
+        data.setEvents(new ArrayList<>(Arrays.asList(event1, event2, event3, event4)));
+        Editor.saveEvent(data, event3, "", "", 1, false);
+        assertEquals(Arrays.asList(event3, event1, event2, event4), data.getEvents());
+        assertEquals(1, event3.getQueueNr());
+        assertEquals(2, event1.getQueueNr());
+        assertEquals(3, event2.getQueueNr());
+        assertEquals(4, event4.getQueueNr());
+    }
+
+
+    @Test
+    public void movingElementBackInQueueChangesEventsListCorrectly() {
+        Data data = new Data();
+        Event event1 = new Event();
+        event1.setQueueNr(1);
+        Event event2 = new Event();
+        event1.setQueueNr(2);
+        Event event3 = new Event();
+        event1.setQueueNr(3);
+        Event event4 = new Event();
+        event1.setQueueNr(4);
+        data.setEvents(new ArrayList<>(Arrays.asList(event1, event2, event3, event4)));
+        Editor.saveEvent(data, event4, "", "", 2, false);
+        assertEquals(Arrays.asList(event1, event4, event2, event3), data.getEvents());
+        assertEquals(1, event1.getQueueNr());
+        assertEquals(2, event4.getQueueNr());
+        assertEquals(3, event2.getQueueNr());
+        assertEquals(4, event3.getQueueNr());
+    }
+
+
+    @Test
+    public void movingElementForwardInQueueChangesEventsListCorrectly() {
+        Data data = new Data();
+        Event event1 = new Event();
+        event1.setQueueNr(1);
+        Event event2 = new Event();
+        event1.setQueueNr(2);
+        Event event3 = new Event();
+        event1.setQueueNr(3);
+        Event event4 = new Event();
+        event1.setQueueNr(4);
+        data.setEvents(new ArrayList<>(Arrays.asList(event1, event2, event3, event4)));
+        Editor.saveEvent(data, event1, "", "", 3, false);
+        assertEquals(Arrays.asList(event2, event3, event1, event4), data.getEvents());
+        assertEquals(1, event2.getQueueNr());
+        assertEquals(2, event3.getQueueNr());
+        assertEquals(3, event1.getQueueNr());
+        assertEquals(4, event4.getQueueNr());
+    }
 }
