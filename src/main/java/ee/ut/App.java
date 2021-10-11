@@ -9,11 +9,18 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 /**
@@ -26,10 +33,12 @@ public class App extends Application {
     private static Data data;
 
     private static Scene scene;
+    private static Stage previewStage;
 
     @Override
     public void start(Stage stage) throws IOException {
-        Path resultFolder = Path.of(System.getProperty("user.dir")+"\\result");
+        previewStage = new Stage();
+        Path resultFolder = Path.of(System.getProperty("user.dir") + "\\result");
         if (!Files.exists(resultFolder)) {
             Files.createDirectory(resultFolder);
             Files.write(resultFolder.resolve("style.css"), Objects.requireNonNull(App.class.getResourceAsStream("style.css")).readAllBytes());
@@ -71,20 +80,52 @@ public class App extends Application {
         Menu fileMenu = new Menu("file");
         MenuItem saveFile = new MenuItem("Salvesta ajajoon");
         saveFile.setOnAction(event -> {
-            Path file = Path.of(System.getProperty("user.dir")+"\\result\\data.js");
+            Path file = Path.of(System.getProperty("user.dir") + "\\result\\data.js");
             try {
-                Files.writeString(file, "const data = "+new ObjectMapper().writeValueAsString(data));
+                Files.writeString(file, "const data = " + new ObjectMapper().writeValueAsString(data));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
+
+
+        Menu previewMenu = new Menu("eelvaade");
+        MenuItem showPreview = new MenuItem("kuva eelvaade");
+
+        showPreview.setOnAction(actionEvent -> {
+            Path path = Path.of(System.getProperty("user.dir") + "\\result\\timeline.html");
+            String content;
+            try {
+                content = Files.readString(path);
+                content = content.replace("<script src=\"data.js\">", "<script> const data = " + new ObjectMapper().writeValueAsString(data));
+                content = content.replace("<script src=\"", "<script src=\"file:///"+System.getProperty("user.dir")+"\\result\\");
+                content = content.replace("testCSS.css", "file:///"+System.getProperty("user.dir")+"\\result\\testCSS.css");
+
+                WebView webView = new WebView();
+                WebEngine webEngine = webView.getEngine();
+                webEngine.loadContent(content);
+                VBox vBox = new VBox(webView);
+
+                Scene scene = new Scene(vBox, 800, 600);
+                previewStage.setTitle("Eelvaade");
+                previewStage.setScene(scene);
+                previewStage.show();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
         fileMenu.getItems().add(saveFile);
+        previewMenu.getItems().add(showPreview);
         menuBar.getMenus().add(fileMenu);
+        menuBar.getMenus().add(previewMenu);
         BorderPane borderPane = new BorderPane();
         borderPane.prefHeightProperty().bind(scene.heightProperty());
         borderPane.prefWidthProperty().bind(scene.widthProperty());
         borderPane.setTop(menuBar);
         borderPane.setCenter(tabPane);
+        //borderPane.setBottom(scrollPane);
         root.getChildren().add(borderPane);
         scene.setRoot(root);
     }
