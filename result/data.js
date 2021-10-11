@@ -1,2 +1,1 @@
-const data = {}
-
+const data = {"labelType":"LINE","eventSpace":200,"events":[{"queueNr":1,"label":"345","htmlContent":"<p style=\"font-family: 'Rubik';\">Insert text here</p>","packed":false,"text":"Insert text here"}]}

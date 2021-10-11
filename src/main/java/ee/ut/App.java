@@ -91,29 +91,28 @@ public class App extends Application {
         MenuItem showPreview = new MenuItem("kuva eelvaade");
 
         showPreview.setOnAction(actionEvent -> {
-            Path path = Path.of(System.getProperty("user.dir") + "\\src\\main\\resources\\ee\\ut\\timeline.html");
-
+            Path path = Path.of(System.getProperty("user.dir") + "\\result\\timeline.html");
             String content;
             try {
-                content = new String(Files.readAllBytes(path));
-                content = content.replaceAll("<script>.*</script>", "<script> const data = " + new ObjectMapper().writeValueAsString(data) + " </script>");
+                content = Files.readString(path);
+                content = content.replace("<script src=\"data.js\">", "<script> const data = " + new ObjectMapper().writeValueAsString(data));
+                content = content.replace("<script src=\"", "<script src=\"file:///"+System.getProperty("user.dir")+"\\result\\");
+                content = content.replace("testCSS.css", "file:///"+System.getProperty("user.dir")+"\\result\\testCSS.css");
 
-                Files.writeString(path, content);
+                WebView webView = new WebView();
+                WebEngine webEngine = webView.getEngine();
+                webEngine.loadContent(content);
+                VBox vBox = new VBox(webView);
+
+                Scene scene = new Scene(vBox, 800, 600);
+                Stage stage = new Stage();
+                stage.setTitle("Eelvaade");
+                stage.setScene(scene);
+                stage.show();
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            WebView webView = new WebView();
-            WebEngine webEngine = webView.getEngine();
-            URL url = App.class.getResource("timeline.html");
-            webEngine.load(url.toString());
-            VBox vBox = new VBox(webView);
-
-            Scene scene = new Scene(vBox, 600, 400);
-            Stage stage = new Stage();
-            stage.setTitle("Eelvaade");
-            stage.setScene(scene);
-            stage.show();
         });
 
         fileMenu.getItems().add(saveFile);
