@@ -23,7 +23,6 @@ public class Editor {
         }
         event.setLabel(label);
         event.setPacked(allEventsPacked);
-        event.setQueueNr(queueNr);
         events.add(queueNr-1, event);
         for (int i = 1; i <= events.size(); i++) {
             events.get(i-1).setQueueNr(i);
