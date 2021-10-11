@@ -33,9 +33,11 @@ public class App extends Application {
     private static Data data;
 
     private static Scene scene;
+    private static Stage previewStage;
 
     @Override
     public void start(Stage stage) throws IOException {
+        previewStage = new Stage();
         Path resultFolder = Path.of(System.getProperty("user.dir") + "\\result");
         if (!Files.exists(resultFolder)) {
             Files.createDirectory(resultFolder);
@@ -105,10 +107,9 @@ public class App extends Application {
                 VBox vBox = new VBox(webView);
 
                 Scene scene = new Scene(vBox, 800, 600);
-                Stage stage = new Stage();
-                stage.setTitle("Eelvaade");
-                stage.setScene(scene);
-                stage.show();
+                previewStage.setTitle("Eelvaade");
+                previewStage.setScene(scene);
+                previewStage.show();
 
             } catch (IOException e) {
                 e.printStackTrace();
