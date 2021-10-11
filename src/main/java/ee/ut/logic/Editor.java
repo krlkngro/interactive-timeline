@@ -18,17 +18,16 @@ public class Editor {
             boolean isNew) {
         event.setHtmlContent(htmlText.replaceAll("(<html(.|\n)*<body.*?>)|(</body>\n*</html>)|(\n)", ""));
         List<Event> events = data.getEvents();
-        if (isNew) {
-            events.add(event);
-        }
-        event.setQueueNr(Math.max(1, queueNr));
-        for (Event dataEvent: events) {
-            if (dataEvent.getQueueNr() >= event.getQueueNr() && dataEvent != event) {
-                dataEvent.setQueueNr(dataEvent.getQueueNr()+1);
-            }
+        if (!isNew) {
+            events.remove(event);
         }
         event.setLabel(label);
         event.setPacked(allEventsPacked);
+        event.setQueueNr(queueNr);
+        events.add(queueNr-1, event);
+        for (int i = 1; i <= events.size(); i++) {
+            events.get(i-1).setQueueNr(i);
+        }
     }
 
     public static void deleteEvent(Data data, Event event) {
