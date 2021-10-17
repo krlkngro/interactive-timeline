@@ -118,6 +118,10 @@ public class EventsController implements Initializable {
                 fontSelection.setVisible(false);
                 fontSelection.setManaged(false);
                 Node foreground = htmlEditor.lookup(".html-editor-foreground");
+                if (foreground == null) {
+                    editorInitialized = false;
+                    startEdit();
+                }
                 HBox colorParent = (HBox) foreground.getParent();
                 foreground.setVisible(false);
                 foreground.setManaged(false);
