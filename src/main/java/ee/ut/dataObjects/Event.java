@@ -1,10 +1,18 @@
 package ee.ut.dataObjects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Event {
     private int queueNr;
     private String label;
     private String htmlContent;
     private Boolean packed;
+    @JsonIgnore
+    private final List<URI> imagePaths;
 
 
     public Event() {
@@ -13,13 +21,15 @@ public class Event {
         this.queueNr = 1;
         this.label = "";
         this.packed = false;
+        this.imagePaths = new ArrayList<>();
     }
 
-    public Event(Boolean packed, int queueNr, String label, String htmlContent, int maxHeight, int width, Boolean placedLeft) {
+    public Event(Boolean packed, int queueNr, String label, String htmlContent, List<URI> imagePaths) {
         this.packed = packed;
         this.queueNr = queueNr;
         this.label = label;
         this.htmlContent = htmlContent;
+        this.imagePaths = imagePaths;
     }
 
 
@@ -54,6 +64,10 @@ public class Event {
                 .strip()
                 .split("\n")[0];
         return strippedText.substring(0, Math.min(50, strippedText.length()));
+    }
+
+    public List<URI> getImagePaths() {
+        return imagePaths;
     }
 
     public Boolean getPacked() { return packed; }

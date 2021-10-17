@@ -13,16 +13,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Objects;
-
 /**
  * JavaFX App
  */
@@ -79,10 +75,34 @@ public class App extends Application {
         Menu fileMenu = new Menu("file");
         MenuItem saveFile = new MenuItem("Salvesta ajajoon");
         saveFile.setOnAction(event -> {
-            Path file = Path.of(System.getProperty("user.dir") + "\\result\\data.js");
+            Path resultFolder = Path.of(System.getProperty("user.dir") + "\\result");
+            Path file = resultFolder.resolve("data.js");
+            Path imageFolder = resultFolder.resolve("images");
             try {
+                if (data.getEvents().stream().anyMatch(e -> e.getImagePaths().size() > 0)) {
+                    if (imageFolder.toFile().exists()) {
+                        FileUtils.cleanDirectory(imageFolder.toFile());
+                    } else {
+                        Files.createDirectories(imageFolder);
+                    }
+                    data.getEvents().forEach(e -> e.getImagePaths().forEach(path -> {
+                        Path imageFilePath = Path.of(path);
+                        if (imageFolder.toUri().relativize(path).equals(path)) {
+                            try {
+                                FileUtils.copyFileToDirectory(imageFilePath.toFile(), imageFolder.toFile());
+                            } catch (IOException ex) {
+                                //todo notify user that copying image failed
+                                ex.printStackTrace();
+                            }
+                        }
+                        e.setHtmlContent(e.getHtmlContent().replaceFirst("file:/(//)?"+imageFilePath.toString().replaceAll("\\\\", "/"), "images/"+imageFilePath.getFileName()));
+                    }));
+                }
+
                 Files.writeString(file, "const data = " + new ObjectMapper().writeValueAsString(data));
+                scene.setRoot(loadFXML("primary"));
             } catch (IOException e) {
+                //todo notify user
                 e.printStackTrace();
             }
         });

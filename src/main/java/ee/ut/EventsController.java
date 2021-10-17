@@ -8,14 +8,20 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.effect.ColorAdjust;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.HTMLEditor;
+import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import static ee.ut.App.getData;
@@ -94,6 +100,7 @@ public class EventsController implements Initializable {
         }
         label.setText(this.eventToEdit.getLabel());
         if (!editorInitialized) {
+            editorInitialized = true;
             //todo still not great but better than before
             Task<Void> sleeper = new Task<>() {
                 @Override
@@ -111,11 +118,29 @@ public class EventsController implements Initializable {
                 fontSelection.setVisible(false);
                 fontSelection.setManaged(false);
                 Node foreground = htmlEditor.lookup(".html-editor-foreground");
+                HBox colorParent = (HBox) foreground.getParent();
                 foreground.setVisible(false);
                 foreground.setManaged(false);
                 Node background = htmlEditor.lookup(".html-editor-background");
                 background.setVisible(false);
                 background.setManaged(false);
+                Button imageButton = new Button();
+                imageButton.setTooltip(new Tooltip("Insert image"));
+                Image imageButtonIcon =  new Image(Objects.requireNonNull(App.class.getResource("outline_image_black_24dp.png")).toString());
+                ColorAdjust lighten = new ColorAdjust(0, 0, 0.5, 0);
+                ImageView imageButtonIconView = new ImageView(imageButtonIcon);
+                FileChooser imagePicker = new FileChooser();
+                imagePicker.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Images", "*.jpg", "*.jpeg", "*.png", "*.gif", "*.bmp"), new FileChooser.ExtensionFilter("All files", "*"));
+                imageButton.setOnAction(actionEvent -> {
+                    File imageFile = imagePicker.showOpenDialog(htmlEditor.getScene().getWindow());
+                    if (imageFile != null) {
+                        htmlEditor.setHtmlText(htmlEditor.getHtmlText().replace("</body>", "<img src=\"" + imageFile.toURI() + "\"></body>"));
+                        eventToEdit.getImagePaths().add(imageFile.toURI());
+                    }
+                });
+                imageButtonIconView.setEffect(lighten);
+                ((StyleableProperty)imageButton.graphicProperty()).applyStyle(null, imageButtonIconView);
+                colorParent.getChildren().add(imageButton);
 
             });
             new Thread(sleeper).start();
