@@ -14,10 +14,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.HTMLEditor;
+import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,6 +34,8 @@ public class EventsController implements Initializable {
     private Event eventToEdit;
     private boolean editingNewEvent;
     private boolean editorInitialized = false;
+    private String imageResizeScript;
+    private String cssText;
 
     @FXML
     private TableView<Event> savedEvents;
@@ -72,13 +76,6 @@ public class EventsController implements Initializable {
 
     private void startEdit() {
         toggleAll();
-        File css = new File(System.getProperty("user.dir")+"\\result\\style.css");
-        String cssText = "";
-        try {
-            cssText = Files.readString(Path.of(css.getAbsolutePath()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         setEditorText("""
                 <html dir="ltr">
                 <head>
@@ -87,8 +84,11 @@ public class EventsController implements Initializable {
                 <body contentEditable="true" class="content" style="width: 600px">
                 %s
                 </body>
+                <script>
+                %s
+                </script>
                 </html>
-                """.formatted(cssText,this.eventToEdit.getHtmlContent()));
+                """.formatted(cssText,this.eventToEdit.getHtmlContent(), imageResizeScript));
         SpinnerValueFactory.IntegerSpinnerValueFactory queueValueFactory = (SpinnerValueFactory.IntegerSpinnerValueFactory) this.queueNr.getValueFactory();
         queueValueFactory.setMin(1);
         queueValueFactory.setMax(getData().getEvents().size() + (this.editingNewEvent? 1 : 0));
@@ -126,7 +126,7 @@ public class EventsController implements Initializable {
                 background.setManaged(false);
                 Button imageButton = new Button();
                 imageButton.setTooltip(new Tooltip("Insert image"));
-                Image imageButtonIcon =  new Image(Objects.requireNonNull(App.class.getResource("outline_image_black_24dp.png")).toString());
+                Image imageButtonIcon = new Image(Objects.requireNonNull(App.class.getResource("outline_image_black_24dp.png")).toString());
                 ColorAdjust lighten = new ColorAdjust(0, 0, 0.5, 0);
                 ImageView imageButtonIconView = new ImageView(imageButtonIcon);
                 FileChooser imagePicker = new FileChooser();
@@ -149,6 +149,7 @@ public class EventsController implements Initializable {
 
     @FXML
     private void save() {
+        ((WebView) htmlEditor.lookup("WebView")).getEngine().executeScript("document.getElementsByTagName(\"body\")[0].dispatchEvent(new Event(\"scroll\"))");
         saveEvent(
                 App.getData(),
                 this.eventToEdit,
@@ -245,5 +246,18 @@ public class EventsController implements Initializable {
         deleteButton.setMaxWidth(100000);
 
         savedEvents.getColumns().addAll(editButton, deleteButton);
+
+        File css = new File(System.getProperty("user.dir")+"\\result\\style.css");
+        cssText = "";
+        imageResizeScript = "";
+        try {
+            cssText = Files.readString(Path.of(css.getAbsolutePath()));
+            // todo: this script has a bug when clicking on image while the top of the image is not on screen:
+            //  the handle for resizing will appear at a wrong spot (too high).
+            //  As this bug only occurs in javafx as far as I know and is not reproducible in an actual browser, I currently have no idea how to fix this
+            imageResizeScript = Files.readString(Path.of(Objects.requireNonNull(App.class.getResource("resizeImages.js")).toURI()));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 }
