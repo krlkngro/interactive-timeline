@@ -1,7 +1,6 @@
 package ee.ut;
 
 import ee.ut.dataObjects.Data;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -49,19 +48,6 @@ public class EventsControllerTest extends ApplicationTest {
     }
 
 
-    //todo this was an ugly fix for htmleditor webengine executescript complaining about being on the main thread
-    @Test
-    public void HTMLEditorBecomesInvisibleOnceSaveButtonClicked() {
-        Platform.runLater(() -> {
-            mockApp = Mockito.mockStatic(App.class);
-            mockApp.when(App::getData).thenReturn(new Data());
-            lookup("#newEventButton").queryButton().fire();
-            lookup("#saveButton").queryButton().fire();
-            Assert.assertFalse(lookup("#editor").query().isVisible());
-            Assert.assertFalse(lookup("#editor").query().isManaged());
-            mockApp.close();
-        });
-    }
 
     @Test
     public void HTMLEditorBecomesInvisibleOnceCancelButtonClicked() {
