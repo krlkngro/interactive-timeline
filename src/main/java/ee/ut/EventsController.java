@@ -3,6 +3,7 @@ package ee.ut;
 import ee.ut.dataObjects.Event;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
+import javafx.css.StyleableProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -77,7 +78,7 @@ public class EventsController implements Initializable {
                 <head>
                     <style>%s</style>
                 </head>
-                <body contentEditable="true">
+                <body contentEditable="true" class="content" style="width: 600px">
                 %s
                 </body>
                 </html>

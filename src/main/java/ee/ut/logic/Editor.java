@@ -16,7 +16,7 @@ public class Editor {
             String label,
             Integer queueNr,
             boolean isNew) {
-        event.setHtmlContent(htmlText.replaceAll("(<html(.|\n)*<body.*?>)|(</body>\n*</html>)|(\n)", ""));
+        event.setHtmlContent(htmlText.replaceAll("((\n|.*)*<body.*?>)|(</body>\n*</html>)|(\n)", ""));
         List<Event> events = data.getEvents();
         if (!isNew) {
             events.remove(event);

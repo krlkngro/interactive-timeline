@@ -42,7 +42,6 @@ public class App extends Application {
         if (!Files.exists(resultFolder)) {
             Files.createDirectory(resultFolder);
             Files.write(resultFolder.resolve("style.css"), Objects.requireNonNull(App.class.getResourceAsStream("style.css")).readAllBytes());
-            Files.write(resultFolder.resolve("testCSS.css"), Objects.requireNonNull(App.class.getResourceAsStream("testCSS.css")).readAllBytes());
             Files.write(resultFolder.resolve("timeline.html"), Objects.requireNonNull(App.class.getResourceAsStream("timeline.html")).readAllBytes());
             Files.write(resultFolder.resolve("timelineGenerator.js"), Objects.requireNonNull(App.class.getResourceAsStream("timelineGenerator.js")).readAllBytes());
         }
@@ -99,7 +98,7 @@ public class App extends Application {
                 content = Files.readString(path);
                 content = content.replace("<script src=\"data.js\">", "<script> const data = " + new ObjectMapper().writeValueAsString(data));
                 content = content.replace("<script src=\"", "<script src=\"file:///"+System.getProperty("user.dir")+"\\result\\");
-                content = content.replace("testCSS.css", "file:///"+System.getProperty("user.dir")+"\\result\\testCSS.css");
+                content = content.replace("style.css", "file:///"+System.getProperty("user.dir")+"\\result\\style.css");
 
                 WebView webView = new WebView();
                 WebEngine webEngine = webView.getEngine();
