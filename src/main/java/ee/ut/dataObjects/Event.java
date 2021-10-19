@@ -5,12 +5,19 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Event {
     private int queueNr;
     private String label;
     private String htmlContent;
     private Boolean packed;
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    private UUID uuid;
     @JsonIgnore
     private final List<URI> imagePaths;
 
@@ -22,14 +29,16 @@ public class Event {
         this.label = "";
         this.packed = false;
         this.imagePaths = new ArrayList<>();
+        this.uuid = UUID.randomUUID();
     }
 
-    public Event(Boolean packed, int queueNr, String label, String htmlContent, List<URI> imagePaths) {
+    public Event(Boolean packed, int queueNr, String label, String htmlContent, List<URI> imagePaths, UUID uuid) {
         this.packed = packed;
         this.queueNr = queueNr;
         this.label = label;
         this.htmlContent = htmlContent;
         this.imagePaths = imagePaths;
+        this.uuid = uuid;
     }
 
 
