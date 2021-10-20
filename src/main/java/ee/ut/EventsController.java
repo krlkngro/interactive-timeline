@@ -1,6 +1,7 @@
 package ee.ut;
 
 import ee.ut.dataObjects.Event;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.css.StyleableProperty;
@@ -141,6 +142,13 @@ public class EventsController implements Initializable {
                         htmlEditor.setHtmlText(htmlEditor.getHtmlText().replace("</body>", "<img src=\"" + imageFile.toURI() + "\"></body>"));
                         eventToEdit.getImagePaths().add(imageFile.toURI());
                     }
+                });
+                htmlEditor.widthProperty().addListener(e -> {
+                    Platform.runLater(() -> {
+                        if (!colorParent.getChildren().contains(imageButton)) {
+                            colorParent.getChildren().add(imageButton);
+                        }
+                    });
                 });
                 imageButtonIconView.setEffect(lighten);
                 ((StyleableProperty)imageButton.graphicProperty()).applyStyle(null, imageButtonIconView);
