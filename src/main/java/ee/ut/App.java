@@ -13,8 +13,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -106,7 +104,8 @@ public class App extends Application {
                                     Path imageFilePath = Path.of(path);
                                     Path savedImage = imageFilePath;
                                     if (eventImageFolder.toUri().relativize(path).equals(path) && e.getHtmlContent().contains("src=\"" + path + "\"")) {
-                                        savedImage = eventImageFolder.resolve(largestNumber.incrementAndGet()  + "." + FilenameUtils.getExtension(imageFilePath.toString()).toLowerCase());
+                                        String fileName = imageFilePath.getFileName().toString();
+                                        savedImage = eventImageFolder.resolve(largestNumber.incrementAndGet() + (fileName.contains(".") ? fileName.substring(fileName.lastIndexOf(".")) : ""));
                                         Files.copy(imageFilePath, savedImage, StandardCopyOption.REPLACE_EXISTING);
                                     }
                                     e.setHtmlContent(e.getHtmlContent().replaceFirst(path.toString(), "images/" + e.getUuid().toString() + "/" + savedImage.getFileName()));
@@ -127,14 +126,10 @@ public class App extends Application {
                 Arrays.stream(imageFolder.toFile().listFiles()).filter(
                         f -> data.getEvents().stream().noneMatch(e -> e.getUuid().toString().equals(f.getName()))
                 ).forEach(f -> {
-                    try {
-                        if (f.isDirectory()) {
-                            FileUtils.deleteDirectory(f);
-                        } else {
-                            FileUtils.delete(f);
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    if (f.isDirectory()) {
+                        deleteDir(f);
+                    } else {
+                        f.delete();
                     }
                 });
                 Files.writeString(file, "const data = " + new ObjectMapper().writeValueAsString(data));
@@ -199,4 +194,13 @@ public class App extends Application {
         return scene;
     }
 
+    private static void deleteDir(File dir) {
+        Arrays.stream(Objects.requireNonNull(dir.listFiles())).forEach(f -> {
+            if (f.isDirectory()) {
+                deleteDir(f);
+            }
+            f.delete();
+        });
+        dir.delete();
+    }
 }
