@@ -99,7 +99,7 @@ public class App extends Application {
                 content = Files.readString(path);
                 content = content.replace("<script src=\"data.js\">", "<script> const data = " + new ObjectMapper().writeValueAsString(data));
                 content = content.replace("<script src=\"", "<script src=\"file:///"+System.getProperty("user.dir")+"\\result\\");
-                content = content.replace("testCSS.css", "file:///"+System.getProperty("user.dir")+"\\result\\testCSS.css");
+                content = content.replace("style.css", "file:///"+System.getProperty("user.dir")+"\\result\\style.css");
 
                 WebView webView = new WebView();
                 WebEngine webEngine = webView.getEngine();

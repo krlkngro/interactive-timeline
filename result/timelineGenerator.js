@@ -6,7 +6,7 @@ timelineDiv.classList.add("timeline")
 //Generate html
 for (const eventContent of data.events) {
     if (eventContent.queueNr === 1) {
-        timelineDiv.appendChild(addContainer(eventContent.htmlContent))
+        timelineDiv.appendChild(addContainer(eventContent))
         timelineDiv.appendChild(addCustomContainer('timelineCenter-line'))
         timelineDiv.appendChild(addCustomContainer('empty'))
         continue
@@ -18,7 +18,7 @@ for (const eventContent of data.events) {
 scriptContainer.parentNode.insertBefore(timelineDiv, scriptContainer)
 
 
-function addContainer(htmlText) {
+function addContainer(content) {
     const event = document.createElement("div");
     event.classList.add('timelineEvent')
 
@@ -30,12 +30,12 @@ function addContainer(htmlText) {
 
 
 
-    const content = document.createElement("div");
-    content.classList.add("timelineContent")
-    content.insertAdjacentHTML('beforeend', htmlText);
+    const contentDiv = document.createElement("div");
+    contentDiv.classList.add("timelineContent")
+    contentDiv.insertAdjacentHTML('beforeend', content.htmlContent);
 
-    section.append(addIcon())
-    section.appendChild(content)
+    section.append(addIcon(content.label))
+    section.appendChild(contentDiv)
     eventBox.appendChild(section)
     event.appendChild(eventBox)
 
@@ -48,12 +48,14 @@ function addCustomContainer(className) {
     return newContainer
 }
 
-function addIcon() {
+function addIcon(label) {
     const icon = document.createElement('i')
     icon.classList.add('icon')
-    const text = document.createElement('p')
-    text.textContent = '20.10.21 autumn'
+    if (data.labelType === "TEXT") {
+        const text = document.createElement('p')
+        text.textContent = label
+        icon.appendChild(text)
+    }
 
-    icon.appendChild(text)
     return icon
 }
