@@ -40,7 +40,6 @@ body {
 .timelineEvent {
     grid-row: span 2;
     width: 100%;
-    /*margin: 10px;*/
     border-radius: 5px;
     background-color: #2C5697;
     position: relative;
