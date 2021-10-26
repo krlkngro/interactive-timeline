@@ -1,20 +1,30 @@
 package ee.ut;
 
 import ee.ut.dataObjects.Event;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
+import javafx.css.StyleableProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.effect.ColorAdjust;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.HTMLEditor;
+import javafx.scene.web.WebView;
+import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import static ee.ut.App.getData;
@@ -25,6 +35,8 @@ public class EventsController implements Initializable {
     private Event eventToEdit;
     private boolean editingNewEvent;
     private boolean editorInitialized = false;
+    private String imageResizeScript;
+    private String cssText;
 
     @FXML
     private TableView<Event> savedEvents;
@@ -65,23 +77,19 @@ public class EventsController implements Initializable {
 
     private void startEdit() {
         toggleAll();
-        File css = new File(System.getProperty("user.dir")+"\\result\\style.css");
-        String cssText = "";
-        try {
-            cssText = Files.readString(Path.of(css.getAbsolutePath()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         setEditorText("""
                 <html dir="ltr">
                 <head>
                     <style>%s</style>
                 </head>
-                <body contentEditable="true">
+                <body contentEditable="true" class="content" style="width: 600px">
                 %s
                 </body>
+                <script>
+                %s
+                </script>
                 </html>
-                """.formatted(cssText,this.eventToEdit.getHtmlContent()));
+                """.formatted(cssText,this.eventToEdit.getHtmlContent(), imageResizeScript));
         SpinnerValueFactory.IntegerSpinnerValueFactory queueValueFactory = (SpinnerValueFactory.IntegerSpinnerValueFactory) this.queueNr.getValueFactory();
         queueValueFactory.setMin(1);
         queueValueFactory.setMax(getData().getEvents().size() + (this.editingNewEvent? 1 : 0));
@@ -93,6 +101,7 @@ public class EventsController implements Initializable {
         }
         label.setText(this.eventToEdit.getLabel());
         if (!editorInitialized) {
+            editorInitialized = true;
             //todo still not great but better than before
             Task<Void> sleeper = new Task<>() {
                 @Override
@@ -110,11 +119,40 @@ public class EventsController implements Initializable {
                 fontSelection.setVisible(false);
                 fontSelection.setManaged(false);
                 Node foreground = htmlEditor.lookup(".html-editor-foreground");
+                if (foreground == null) {
+                    editorInitialized = false;
+                    startEdit();
+                }
+                HBox colorParent = (HBox) foreground.getParent();
                 foreground.setVisible(false);
                 foreground.setManaged(false);
                 Node background = htmlEditor.lookup(".html-editor-background");
                 background.setVisible(false);
                 background.setManaged(false);
+                Button imageButton = new Button();
+                imageButton.setTooltip(new Tooltip("Insert image"));
+                Image imageButtonIcon = new Image(Objects.requireNonNull(App.class.getResource("outline_image_black_24dp.png")).toString());
+                ColorAdjust lighten = new ColorAdjust(0, 0, 0.5, 0);
+                ImageView imageButtonIconView = new ImageView(imageButtonIcon);
+                FileChooser imagePicker = new FileChooser();
+                imagePicker.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Images", "*.jpg", "*.jpeg", "*.png", "*.gif", "*.bmp"), new FileChooser.ExtensionFilter("All files", "*"));
+                imageButton.setOnAction(actionEvent -> {
+                    File imageFile = imagePicker.showOpenDialog(htmlEditor.getScene().getWindow());
+                    if (imageFile != null) {
+                        htmlEditor.setHtmlText(htmlEditor.getHtmlText().replace("</body>", "<img src=\"" + imageFile.toURI() + "\"></body>"));
+                        eventToEdit.getImagePaths().add(imageFile.toURI());
+                    }
+                });
+                htmlEditor.widthProperty().addListener(e -> {
+                    Platform.runLater(() -> {
+                        if (!colorParent.getChildren().contains(imageButton)) {
+                            colorParent.getChildren().add(imageButton);
+                        }
+                    });
+                });
+                imageButtonIconView.setEffect(lighten);
+                ((StyleableProperty)imageButton.graphicProperty()).applyStyle(null, imageButtonIconView);
+                colorParent.getChildren().add(imageButton);
 
             });
             new Thread(sleeper).start();
@@ -123,6 +161,7 @@ public class EventsController implements Initializable {
 
     @FXML
     private void save() {
+        ((WebView) htmlEditor.lookup("WebView")).getEngine().executeScript("document.getElementsByTagName(\"body\")[0].dispatchEvent(new Event(\"scroll\"))");
         saveEvent(
                 App.getData(),
                 this.eventToEdit,
@@ -219,5 +258,18 @@ public class EventsController implements Initializable {
         deleteButton.setMaxWidth(100000);
 
         savedEvents.getColumns().addAll(editButton, deleteButton);
+
+        File css = new File(System.getProperty("user.dir")+"\\result\\style.css");
+        cssText = "";
+        imageResizeScript = "";
+        try {
+            cssText = Files.readString(Path.of(css.getAbsolutePath()));
+            // todo: this script has a bug when clicking on image while the top of the image is not on screen:
+            //  the handle for resizing will appear at a wrong spot (too high).
+            //  As this bug only occurs in javafx as far as I know and is not reproducible in an actual browser, I currently have no idea how to fix this
+            imageResizeScript = Files.readString(Path.of(Objects.requireNonNull(App.class.getResource("resizeImages.js")).toURI()));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 }

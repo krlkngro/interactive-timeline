@@ -117,12 +117,14 @@ body {
     object-fit: contain;
 }
 
+
 .timelineContent video, .timelineContent iframe {
     width: 420px;
     height: 315px;
     max-width: 100%;
     object-fit: contain;
 }
+
 
 @media only screen and (max-width: 640px) {
     .timeline {
@@ -148,6 +150,3 @@ body {
     .timelineEventBox .icon {
         left: -13%
     }
-
-
-}

@@ -47,13 +47,7 @@ public class EventsControllerTest extends ApplicationTest {
         Assert.assertTrue(lookup("#editor").query().isManaged());
     }
 
-    @Test
-    public void HTMLEditorBecomesInvisibleOnceSaveButtonClicked() {
-        lookup("#newEventButton").queryButton().fire();
-        lookup("#saveButton").queryButton().fire();
-        Assert.assertFalse(lookup("#editor").query().isVisible());
-        Assert.assertFalse(lookup("#editor").query().isManaged());
-    }
+
 
     @Test
     public void HTMLEditorBecomesInvisibleOnceCancelButtonClicked() {

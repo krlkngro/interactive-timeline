@@ -16,7 +16,14 @@ public class Editor {
             String label,
             Integer queueNr,
             boolean isNew) {
-        event.setHtmlContent(htmlText.replaceAll("(<html(.|\n)*<body.*?>)|(</body>\n*</html>)|(\n)", ""));
+        htmlText = htmlText.substring(Math.max(0, htmlText.indexOf("<body")), Math.max(0, htmlText.indexOf("</body>")));
+        htmlText = htmlText.replaceAll("(<body.*?>)|(\n)", "");
+        int scriptStart = htmlText.indexOf("<script");
+        if (scriptStart >= 0) {
+            int scriptEnd  = htmlText.indexOf("</script>");
+            htmlText = htmlText.substring(0, scriptStart) + htmlText.substring(scriptEnd+9);
+        }
+        event.setHtmlContent(htmlText);
         List<Event> events = data.getEvents();
         if (!isNew) {
             events.remove(event);

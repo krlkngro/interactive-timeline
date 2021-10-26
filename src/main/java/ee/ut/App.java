@@ -14,14 +14,14 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * JavaFX App
@@ -42,7 +42,6 @@ public class App extends Application {
         if (!Files.exists(resultFolder)) {
             Files.createDirectory(resultFolder);
             Files.write(resultFolder.resolve("style.css"), Objects.requireNonNull(App.class.getResourceAsStream("style.css")).readAllBytes());
-            Files.write(resultFolder.resolve("testCSS.css"), Objects.requireNonNull(App.class.getResourceAsStream("testCSS.css")).readAllBytes());
             Files.write(resultFolder.resolve("timeline.html"), Objects.requireNonNull(App.class.getResourceAsStream("timeline.html")).readAllBytes());
             Files.write(resultFolder.resolve("timelineGenerator.js"), Objects.requireNonNull(App.class.getResourceAsStream("timelineGenerator.js")).readAllBytes());
         }
@@ -80,10 +79,63 @@ public class App extends Application {
         Menu fileMenu = new Menu("file");
         MenuItem saveFile = new MenuItem("Salvesta ajajoon");
         saveFile.setOnAction(event -> {
-            Path file = Path.of(System.getProperty("user.dir") + "\\result\\data.js");
+            Path resultFolder = Path.of(System.getProperty("user.dir") + "\\result");
+            Path file = resultFolder.resolve("data.js");
+            Path imageFolder = resultFolder.resolve("images");
             try {
+                if (!imageFolder.toFile().exists()) {
+                    Files.createDirectories(imageFolder);
+                }
+                if (data.getEvents().stream().anyMatch(e -> e.getImagePaths().size() > 0)) {
+                    data.getEvents().forEach(e -> {
+                        try {
+                            Path eventImageFolder = imageFolder.resolve(e.getUuid().toString());
+                            if (!eventImageFolder.toFile().exists()) {
+                                Files.createDirectories(eventImageFolder);
+                            }
+                            AtomicInteger largestNumber = new AtomicInteger(
+                                    Arrays.stream(eventImageFolder.toFile().listFiles())
+                                    .map(imageFile -> Integer.parseInt(imageFile.getName().split("\\.")[0]))
+                                    .max(Integer::compareTo)
+                                    .orElse(0)
+                            );
+                            e.getImagePaths().forEach(path -> {
+                                try {
+                                    Path imageFilePath = Path.of(path);
+                                    Path savedImage = imageFilePath;
+                                    if (eventImageFolder.toUri().relativize(path).equals(path) && e.getHtmlContent().contains("src=\"" + path + "\"")) {
+                                        String fileName = imageFilePath.getFileName().toString();
+                                        savedImage = eventImageFolder.resolve(largestNumber.incrementAndGet() + (fileName.contains(".") ? fileName.substring(fileName.lastIndexOf(".")) : ""));
+                                        Files.copy(imageFilePath, savedImage, StandardCopyOption.REPLACE_EXISTING);
+                                    }
+                                    e.setHtmlContent(e.getHtmlContent().replaceFirst(path.toString(), "images/" + e.getUuid().toString() + "/" + savedImage.getFileName()));
+                                } catch (IOException ex) {
+                                    //todo notify user that copying image failed
+                                    ex.printStackTrace();
+                                }
+                            });
+                            Arrays.stream(eventImageFolder.toFile().listFiles())
+                                    .filter(imageFile -> !e.getHtmlContent().contains("src=\"images/"+e.getUuid().toString()+"/"+imageFile.getName()+"\""))
+                                    .forEach(File::delete);
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    });
+
+                }
+                Arrays.stream(imageFolder.toFile().listFiles()).filter(
+                        f -> data.getEvents().stream().noneMatch(e -> e.getUuid().toString().equals(f.getName()))
+                ).forEach(f -> {
+                    if (f.isDirectory()) {
+                        deleteDir(f);
+                    } else {
+                        f.delete();
+                    }
+                });
                 Files.writeString(file, "const data = " + new ObjectMapper().writeValueAsString(data));
+                scene.setRoot(loadFXML("primary"));
             } catch (IOException e) {
+                //todo notify user
                 e.printStackTrace();
             }
         });
@@ -142,4 +194,13 @@ public class App extends Application {
         return scene;
     }
 
+    private static void deleteDir(File dir) {
+        Arrays.stream(Objects.requireNonNull(dir.listFiles())).forEach(f -> {
+            if (f.isDirectory()) {
+                deleteDir(f);
+            }
+            f.delete();
+        });
+        dir.delete();
+    }
 }
