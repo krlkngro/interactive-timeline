@@ -1,32 +1,61 @@
 //Create container for timeline content
-const scriptContainer = document.querySelector(".timelineContainer");
+const scriptContainer = document.querySelector(".timelineScript");
 const timelineDiv = document.createElement("div");
 timelineDiv.classList.add("timeline")
 
 //Generate html
-let left = true
 for (const eventContent of data.events) {
-    timelineDiv.appendChild(addContainer(eventContent.htmlContent, left))
-    left = !left
+    if (eventContent.queueNr === 1) {
+        timelineDiv.appendChild(addContainer(eventContent))
+        timelineDiv.appendChild(addCustomContainer('timelineCenter-line'))
+        timelineDiv.appendChild(addCustomContainer('empty'))
+        continue
+    }
+    timelineDiv.appendChild(addContainer(eventContent.htmlContent))
 }
 
 //Add generated html to timeline div
 scriptContainer.parentNode.insertBefore(timelineDiv, scriptContainer)
 
 
-function addContainer(content ,left) {
-    const newContainer = document.createElement("div");
+function addContainer(content) {
+    const event = document.createElement("div");
+    event.classList.add('timelineEvent')
 
-    if (left) {
-        newContainer.classList.add("container", "left")
-    } else {
-        newContainer.classList.add("container", "right")
+    const eventBox = document.createElement('div')
+    eventBox.classList.add('timelineEventBox')
+
+    const section = document.createElement('section')
+    section.classList.add('timelineSection')
+
+
+
+    const contentDiv = document.createElement("div");
+    contentDiv.classList.add("timelineContent")
+    contentDiv.insertAdjacentHTML('beforeend', content.htmlContent);
+
+    section.append(addIcon(content.label))
+    section.appendChild(contentDiv)
+    eventBox.appendChild(section)
+    event.appendChild(eventBox)
+
+    return event
+}
+
+function addCustomContainer(className) {
+    const newContainer = document.createElement("div");
+    newContainer.classList.add(className);
+    return newContainer
+}
+
+function addIcon(label) {
+    const icon = document.createElement('i')
+    icon.classList.add('icon')
+    if (data.labelType === "TEXT") {
+        const text = document.createElement('p')
+        text.textContent = label
+        icon.appendChild(text)
     }
 
-    const newContent = document.createElement("div");
-    newContent.classList.add("content")
-    newContent.insertAdjacentHTML('beforeend', content);
-    newContainer.appendChild(newContent)
-
-    return newContainer
+    return icon
 }
