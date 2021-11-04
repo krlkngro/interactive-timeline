@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -34,6 +35,7 @@ public class App extends Application {
 
     private static Scene scene;
     private static Stage previewStage;
+    private static MenuItem saveFile;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -46,6 +48,33 @@ public class App extends Application {
             Files.write(resultFolder.resolve("timelineGenerator.js"), Objects.requireNonNull(App.class.getResourceAsStream("timelineGenerator.js")).readAllBytes());
         }
         scene = new Scene(loadFXML("primary"), 640, 480);
+        //Confirmation on closing
+        stage.setOnCloseRequest(evt -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Kinnita sulgemine");
+            alert.setHeaderText("Kinnita sulgemine");
+            alert.setContentText("Oled sulgemas programmi. Kas soovid jätkata?");
+
+            ButtonType buttonTypeSave = new ButtonType("Salvesta ja jätka");
+            ButtonType buttonTypeClose = new ButtonType("Jätka");
+            ButtonType buttonTypeCancel = new ButtonType("Katkesta");
+
+            alert.getButtonTypes().setAll(buttonTypeSave, buttonTypeClose, buttonTypeCancel);
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == buttonTypeSave) {
+                try {
+                    saveFile.fire();
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+                stage.close();
+            } else if (result.get() == buttonTypeClose) {
+                stage.close();
+            } else if (result.get() == buttonTypeCancel) {
+                evt.consume();
+            }
+        });
         stage.setScene(scene);
         stage.show();
     }
@@ -77,7 +106,7 @@ public class App extends Application {
         TabPane tabPane = new TabPane(settingsTab, eventsTab);
         MenuBar menuBar = new MenuBar();
         Menu fileMenu = new Menu("file");
-        MenuItem saveFile = new MenuItem("Salvesta ajajoon");
+        saveFile = new MenuItem("Salvesta ajajoon");
         saveFile.setOnAction(event -> {
             Path resultFolder = Path.of(System.getProperty("user.dir") + "\\result");
             Path file = resultFolder.resolve("data.js");
@@ -167,6 +196,7 @@ public class App extends Application {
                 e.printStackTrace();
             }
         });
+
 
         fileMenu.getItems().add(saveFile);
         previewMenu.getItems().add(showPreview);

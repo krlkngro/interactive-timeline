@@ -25,6 +25,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import static ee.ut.App.getData;
@@ -236,8 +237,24 @@ public class EventsController implements Initializable {
             private final Button button = new Button("Kustuta");
             {
                 button.setOnAction(event -> {
-                    deleteEvent(getData(), getTableRow().getItem());
-                    savedEvents.refresh();
+                    //Confirmation on deleting
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle("Kinnita kustutamine");
+                    alert.setHeaderText("Kinnita kustutamine");
+                    alert.setContentText("Oled kustutamas sündmust. Kas soovid jätkata?");
+
+                    ButtonType buttonTypeDelete = new ButtonType("Kustuta");
+                    ButtonType buttonTypeCancel = new ButtonType("Katkesta");
+
+                    alert.getButtonTypes().setAll(buttonTypeDelete, buttonTypeCancel);
+
+                    Optional<ButtonType> result = alert.showAndWait();
+                    if (result.get() == buttonTypeDelete) {
+                        deleteEvent(getData(), getTableRow().getItem());
+                        savedEvents.refresh();
+                    } else if (result.get() == buttonTypeCancel) {
+                            event.consume();
+                        }
                 });
             }
 
