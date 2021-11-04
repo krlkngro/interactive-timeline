@@ -11,7 +11,7 @@ for (const eventContent of data.events) {
         timelineDiv.appendChild(addCustomContainer('empty'))
         continue
     }
-    timelineDiv.appendChild(addContainer(eventContent.htmlContent))
+    timelineDiv.appendChild(addContainer(eventContent))
 }
 
 //Add generated html to timeline div
