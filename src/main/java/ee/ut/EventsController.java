@@ -252,9 +252,7 @@ public class EventsController implements Initializable {
                     if (result.get() == buttonTypeDelete) {
                         deleteEvent(getData(), getTableRow().getItem());
                         savedEvents.refresh();
-                    } else if (result.get() == buttonTypeCancel) {
-                            event.consume();
-                        }
+                    }
                 });
             }
 
