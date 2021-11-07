@@ -1,3 +1,5 @@
+
+
 .timelineCenter-line{
     position : absolute;
     height: 100%;
@@ -97,8 +99,8 @@
 }
 
 
-.timelineContent > img,
-.timelineContent > video, .timelineContent > iframe{
+.timelineContent  img,
+.timelineContent  video, .timelineContent  iframe{
     max-width: 100%;
     height: auto;
     object-fit: contain;
