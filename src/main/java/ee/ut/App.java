@@ -182,6 +182,31 @@ public class App extends Application {
         scene.setRoot(root);
     }
 
+    public static void updatePreview(){
+        if (previewStage.isShowing()) {
+            Path path = Path.of(System.getProperty("user.dir") + "\\result\\timeline.html");
+            String content;
+            try {
+                content = Files.readString(path);
+                content = content.replace("<script src=\"data.js\">", "<script> const data = " + new ObjectMapper().writeValueAsString(data));
+                content = content.replace("<script src=\"", "<script src=\"file:///" + System.getProperty("user.dir") + "\\result\\");
+                content = content.replace("style.css", "file:///" + System.getProperty("user.dir") + "\\result\\style.css");
+
+                WebView webView = new WebView();
+                WebEngine webEngine = webView.getEngine();
+                webEngine.loadContent(content);
+                VBox vBox = new VBox(webView);
+
+                Scene scene = new Scene(vBox, 800, 600);
+                previewStage.setTitle("Eelvaade");
+                previewStage.setScene(scene);
+                previewStage.show();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     public static void main(String[] args) {
         launch();
     }
