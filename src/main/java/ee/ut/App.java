@@ -12,6 +12,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -60,8 +61,17 @@ public class App extends Application {
         if (isNew) {
             data = new Data();
         } else {
-            //todo implement loading data from js
-            throw new IllegalArgumentException("Editing and existing timeline not yet implemented");
+
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Vali soovitud ajajoone js fail");
+            File file = fileChooser.showOpenDialog(new Stage());
+            if (file != null) {
+                String dataFromFile = Files.readString(file.toPath());
+                System.out.println(dataFromFile);
+                //TODO: actually read data from file
+
+            }
+            //throw new IllegalArgumentException("Editing and existing timeline not yet implemented");
         }
 
         settingsTab = new Tab();
