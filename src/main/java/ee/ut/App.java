@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import ee.ut.dataObjects.Data;
 import javafx.application.Application;
+import javafx.css.Match;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Parent;
@@ -27,6 +28,8 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * JavaFX App
@@ -45,7 +48,7 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         mainStage = stage;
         previewStage = new Stage();
-        System.setProperty("user.dir", System.getProperty("user.dir")+"\\result");
+        System.setProperty("user.dir", System.getProperty("user.dir") + "\\result");
         Path resultFolder = Path.of(System.getProperty("user.dir"));
         if (!Files.exists(resultFolder)) {
             Files.createDirectory(resultFolder);
@@ -53,6 +56,7 @@ public class App extends Application {
             Files.write(resultFolder.resolve("timeline.html"), Objects.requireNonNull(App.class.getResourceAsStream("timeline.html")).readAllBytes());
             Files.write(resultFolder.resolve("timelineGenerator.js"), Objects.requireNonNull(App.class.getResourceAsStream("timelineGenerator.js")).readAllBytes());
         }
+        data = null;
         scene = new Scene(loadFXML("primary"), 640, 480);
 
         stage.setScene(scene);
@@ -81,7 +85,23 @@ public class App extends Application {
                     JsonMapper mapper = new JsonMapper();
                     data = mapper.readValue(dataFromFile.replaceFirst(".*?\\{", "{"), Data.class);
                     System.setProperty("user.dir", file.getParentFile().getAbsolutePath());
-                } catch (Exception e){
+                    data.getEvents().stream()
+                            .filter(e -> e.getHtmlContent().contains("<img src=\"images"))
+                            .forEach(e -> {
+                                Pattern pattern = Pattern.compile("<img src=\"images.*?\"");
+                                Matcher matcher = pattern.matcher(e.getHtmlContent());
+                                while (matcher.find()) {
+                                    String filePath = matcher.group().substring(10, matcher.group().length() - 1);
+                                    File image = new File(System.getProperty("user.dir") + "\\" + filePath);
+                                    if (image.exists()) {
+                                        e.getImagePaths().add(image.toURI());
+                                        e.setHtmlContent(e.getHtmlContent().replaceAll("<img src=\"" + filePath + "\"", "<img src=\"" + image.toURI() + "\""));
+                                    } else {
+                                        System.out.println(System.getProperty("user.dir" + "\\" + filePath));
+                                    }
+                                }
+                            });
+                } catch (IOException e) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setHeaderText("Vigane fail");
                     alert.setContentText("Ei õnnestunud sellest failist ajajoont luua");
@@ -200,29 +220,31 @@ public class App extends Application {
 
         //Confirmation on closing
         mainStage.setOnCloseRequest(evt -> {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Kinnita sulgemine");
-            alert.setHeaderText("Kinnita sulgemine");
-            alert.setContentText("Oled sulgemas programmi. Kas soovid jätkata?");
+            if (data != null) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Kinnita sulgemine");
+                alert.setHeaderText("Kinnita sulgemine");
+                alert.setContentText("Oled sulgemas programmi. Kas soovid jätkata?");
 
-            ButtonType buttonTypeSave = new ButtonType("Salvesta ja jätka");
-            ButtonType buttonTypeClose = new ButtonType("Jätka");
-            ButtonType buttonTypeCancel = new ButtonType("Katkesta");
+                ButtonType buttonTypeSave = new ButtonType("Salvesta ja jätka");
+                ButtonType buttonTypeClose = new ButtonType("Jätka");
+                ButtonType buttonTypeCancel = new ButtonType("Katkesta");
 
-            alert.getButtonTypes().setAll(buttonTypeSave, buttonTypeClose, buttonTypeCancel);
+                alert.getButtonTypes().setAll(buttonTypeSave, buttonTypeClose, buttonTypeCancel);
 
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == buttonTypeSave) {
-                try {
-                    saveFile.fire();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == buttonTypeSave) {
+                    try {
+                        saveFile.fire();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    mainStage.close();
+                } else if (result.get() == buttonTypeClose) {
+                    mainStage.close();
+                } else if (result.get() == buttonTypeCancel) {
+                    evt.consume();
                 }
-                mainStage.close();
-            } else if (result.get() == buttonTypeClose) {
-                mainStage.close();
-            } else if (result.get() == buttonTypeCancel) {
-                evt.consume();
             }
         });
 
