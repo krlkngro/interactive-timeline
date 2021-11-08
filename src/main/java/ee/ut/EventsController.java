@@ -123,6 +123,7 @@ public class EventsController implements Initializable {
                 if (foreground == null) {
                     editorInitialized = false;
                     startEdit();
+                    return;
                 }
                 HBox colorParent = (HBox) foreground.getParent();
                 foreground.setVisible(false);
