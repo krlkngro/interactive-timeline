@@ -45,7 +45,8 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         mainStage = stage;
         previewStage = new Stage();
-        Path resultFolder = Path.of(System.getProperty("user.dir") + "\\result");
+        System.setProperty("user.dir", System.getProperty("user.dir")+"\\result");
+        Path resultFolder = Path.of(System.getProperty("user.dir"));
         if (!Files.exists(resultFolder)) {
             Files.createDirectory(resultFolder);
             Files.write(resultFolder.resolve("style.css"), Objects.requireNonNull(App.class.getResourceAsStream("style.css")).readAllBytes());
@@ -70,14 +71,16 @@ public class App extends Application {
         } else {
 
             FileChooser fileChooser = new FileChooser();
+            fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Javascript files", "*.js"));
             fileChooser.setTitle("Vali soovitud ajajoone js fail");
-            fileChooser.setInitialDirectory(new File(System.getProperty("user.dir") + "\\result"));
+            fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
             File file = fileChooser.showOpenDialog(new Stage());
             if (file != null) {
                 try {
                     String dataFromFile = Files.readString(file.toPath());
                     JsonMapper mapper = new JsonMapper();
                     data = mapper.readValue(dataFromFile.replaceFirst(".*?\\{", "{"), Data.class);
+                    System.setProperty("user.dir", file.getParentFile().getAbsolutePath());
                 } catch (Exception e){
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setHeaderText("Vigane fail");
@@ -86,6 +89,8 @@ public class App extends Application {
                     return;
 
                 }
+            } else {
+                return;
             }
         }
 
@@ -104,7 +109,7 @@ public class App extends Application {
         Menu fileMenu = new Menu("file");
         MenuItem saveFile = new MenuItem("Salvesta ajajoon");
         saveFile.setOnAction(event -> {
-            Path resultFolder = Path.of(System.getProperty("user.dir") + "\\result");
+            Path resultFolder = Path.of(System.getProperty("user.dir"));
             Path file = resultFolder.resolve("data.js");
             Path imageFolder = resultFolder.resolve("images");
             try {
@@ -175,8 +180,8 @@ public class App extends Application {
             try {
                 content = Files.readString(path);
                 content = content.replace("<script src=\"data.js\">", "<script> const data = " + new ObjectMapper().writeValueAsString(data));
-                content = content.replace("<script src=\"", "<script src=\"file:///" + System.getProperty("user.dir") + "\\result\\");
-                content = content.replace("style.css", "file:///" + System.getProperty("user.dir") + "\\result\\style.css");
+                content = content.replace("<script src=\"", "<script src=\"file:///" + System.getProperty("user.dir") + "\\");
+                content = content.replace("style.css", "file:///" + System.getProperty("user.dir") + "\\style.css");
 
                 WebView webView = new WebView();
                 WebEngine webEngine = webView.getEngine();
