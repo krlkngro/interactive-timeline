@@ -56,7 +56,6 @@ public class App extends Application {
             Files.write(resultFolder.resolve("timeline.html"), Objects.requireNonNull(App.class.getResourceAsStream("timeline.html")).readAllBytes());
             Files.write(resultFolder.resolve("timelineGenerator.js"), Objects.requireNonNull(App.class.getResourceAsStream("timelineGenerator.js")).readAllBytes());
         }
-        data = null;
         scene = new Scene(loadFXML("primary"), 640, 480);
 
         stage.setScene(scene);
@@ -184,6 +183,7 @@ public class App extends Application {
                 });
                 Files.writeString(file, "const data = " + new ObjectMapper().writeValueAsString(data));
                 scene.setRoot(loadFXML("primary"));
+                data = null;
             } catch (IOException e) {
                 //todo notify user
                 e.printStackTrace();
