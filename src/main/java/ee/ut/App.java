@@ -68,6 +68,7 @@ public class App extends Application {
 
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Vali soovitud ajajoone js fail");
+            fileChooser.setInitialDirectory(new File(System.getProperty("user.dir") + "\\result"));
             File file = fileChooser.showOpenDialog(new Stage());
             if (file != null) {
                 String dataFromFile = Files.readString(file.toPath());
