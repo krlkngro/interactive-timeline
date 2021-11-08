@@ -1,7 +1,6 @@
 package ee.ut;
 
 import javafx.stage.Stage;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.testfx.api.FxRobot;
@@ -72,8 +71,8 @@ public class AppTest extends ApplicationTest {
         Assert.assertTrue(savedData.contains("1")); //event with text "ONE" was edited to "1"
     }
 
-    @After
-    public void tearDown(){
+    @Override
+    public void stop(){
         deleteDirectory(Paths.get(System.getProperty("user.dir")+"/result").toFile());
     }
 
