@@ -264,13 +264,13 @@ public class App extends Application {
 
     public static void updatePreview() {
         if (previewStage != null && previewStage.isShowing()) {
-            Path path = Path.of(System.getProperty("user.dir") + "\\result\\timeline.html");
+            Path path = Path.of(System.getProperty("user.dir") + "\\timeline.html");
             String content;
             try {
                 content = Files.readString(path);
                 content = content.replace("<script src=\"data.js\">", "<script> const data = " + new ObjectMapper().writeValueAsString(data));
-                content = content.replace("<script src=\"", "<script src=\"file:///" + System.getProperty("user.dir") + "\\result\\");
-                content = content.replace("style.css", "file:///" + System.getProperty("user.dir") + "\\result\\style.css");
+                content = content.replace("<script src=\"", "<script src=\"file:///" + System.getProperty("user.dir") + "\\");
+                content = content.replace("style.css", "file:///" + System.getProperty("user.dir") + "\\style.css");
 
                 WebView webView = new WebView();
                 WebEngine webEngine = webView.getEngine();
