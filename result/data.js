@@ -1,1 +1,1 @@
-const data = {"labelType":"LINE","eventSpace":200,"events":[{"queueNr":1,"label":"345","htmlContent":"<p style=\"font-family: 'Rubik';\">Insert text here</p>","packed":false,"text":"Insert text here"}]}
+const data = {"labelType":"LINE","eventSpace":200,"events":[{"queueNr":2,"label":"","htmlContent":"<p style=\"font-family: 'Rubik';\">sügis</p>","packed":false,"uuid":"692c0b22-2048-4bbb-9e29-70f0fee1510e","text":"sügis"}]}

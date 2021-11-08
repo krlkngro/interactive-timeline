@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -35,9 +36,11 @@ public class App extends Application {
 
     private static Scene scene;
     private static Stage previewStage;
+    private static Stage mainStage;
 
     @Override
     public void start(Stage stage) throws IOException {
+        mainStage = stage;
         previewStage = new Stage();
         Path resultFolder = Path.of(System.getProperty("user.dir") + "\\result");
         if (!Files.exists(resultFolder)) {
@@ -47,6 +50,7 @@ public class App extends Application {
             Files.write(resultFolder.resolve("timelineGenerator.js"), Objects.requireNonNull(App.class.getResourceAsStream("timelineGenerator.js")).readAllBytes());
         }
         scene = new Scene(loadFXML("primary"), 640, 480);
+
         stage.setScene(scene);
         stage.show();
     }
@@ -175,6 +179,34 @@ public class App extends Application {
 
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        });
+
+        //Confirmation on closing
+        mainStage.setOnCloseRequest(evt -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Kinnita sulgemine");
+            alert.setHeaderText("Kinnita sulgemine");
+            alert.setContentText("Oled sulgemas programmi. Kas soovid jätkata?");
+
+            ButtonType buttonTypeSave = new ButtonType("Salvesta ja jätka");
+            ButtonType buttonTypeClose = new ButtonType("Jätka");
+            ButtonType buttonTypeCancel = new ButtonType("Katkesta");
+
+            alert.getButtonTypes().setAll(buttonTypeSave, buttonTypeClose, buttonTypeCancel);
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == buttonTypeSave) {
+                try {
+                    saveFile.fire();
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+                mainStage.close();
+            } else if (result.get() == buttonTypeClose) {
+                mainStage.close();
+            } else if (result.get() == buttonTypeCancel) {
+                evt.consume();
             }
         });
 
