@@ -74,9 +74,8 @@ public class AppTest extends ApplicationTest {
     @Override
     public void stop(){
         deleteDirectory(Paths.get(System.getProperty("user.dir")+"/result").toFile());
-        System.out.println(System.getProperty("user.dir"));
         System.setProperty("user.dir", System.getProperty("user.dir").replace("/src/test",""));
-        System.out.println(System.getProperty("user.dir"));
+       
     }
 
     boolean deleteDirectory(File directoryToBeDeleted) {
