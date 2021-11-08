@@ -43,5 +43,6 @@ public class GeneralSettingsController {
                 this.eventSpace.getText(),
                 this.eventsPacked.isSelected()
         );
+        App.updatePreview();
     }
 }
