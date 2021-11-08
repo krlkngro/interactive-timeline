@@ -195,7 +195,7 @@ public class App extends Application {
         MenuItem showPreview = new MenuItem("kuva eelvaade");
 
         showPreview.setOnAction(actionEvent -> {
-            Path path = Path.of(System.getProperty("user.dir") + "\\result\\timeline.html");
+            Path path = Path.of(System.getProperty("user.dir") + "\\timeline.html");
             String content;
             try {
                 content = Files.readString(path);
