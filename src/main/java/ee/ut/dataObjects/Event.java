@@ -66,6 +66,7 @@ public class Event {
         this.htmlContent = htmlContent;
     }
 
+    @JsonIgnore
     public String getText() {
         //todo figure out better replacements
         String strippedText = htmlContent.replaceAll("<.*?>", "\n")

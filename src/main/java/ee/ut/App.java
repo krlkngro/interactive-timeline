@@ -1,6 +1,7 @@
 package ee.ut;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import ee.ut.dataObjects.Data;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -15,8 +16,10 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -71,12 +74,19 @@ public class App extends Application {
             fileChooser.setInitialDirectory(new File(System.getProperty("user.dir") + "\\result"));
             File file = fileChooser.showOpenDialog(new Stage());
             if (file != null) {
-                String dataFromFile = Files.readString(file.toPath());
-                System.out.println(dataFromFile);
-                //TODO: actually read data from file
+                try {
+                    String dataFromFile = Files.readString(file.toPath());
+                    JsonMapper mapper = new JsonMapper();
+                    data = mapper.readValue(dataFromFile.replaceFirst(".*?\\{", "{"), Data.class);
+                } catch (Exception e){
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setHeaderText("Vigane fail");
+                    alert.setContentText("Ei õnnestunud sellest failist ajajoont luua");
+                    alert.showAndWait();
+                    return;
 
+                }
             }
-            //throw new IllegalArgumentException("Editing and existing timeline not yet implemented");
         }
 
         settingsTab = new Tab();
@@ -110,9 +120,9 @@ public class App extends Application {
                             }
                             AtomicInteger largestNumber = new AtomicInteger(
                                     Arrays.stream(eventImageFolder.toFile().listFiles())
-                                    .map(imageFile -> Integer.parseInt(imageFile.getName().split("\\.")[0]))
-                                    .max(Integer::compareTo)
-                                    .orElse(0)
+                                            .map(imageFile -> Integer.parseInt(imageFile.getName().split("\\.")[0]))
+                                            .max(Integer::compareTo)
+                                            .orElse(0)
                             );
                             e.getImagePaths().forEach(path -> {
                                 try {
@@ -130,7 +140,7 @@ public class App extends Application {
                                 }
                             });
                             Arrays.stream(eventImageFolder.toFile().listFiles())
-                                    .filter(imageFile -> !e.getHtmlContent().contains("src=\"images/"+e.getUuid().toString()+"/"+imageFile.getName()+"\""))
+                                    .filter(imageFile -> !e.getHtmlContent().contains("src=\"images/" + e.getUuid().toString() + "/" + imageFile.getName() + "\""))
                                     .forEach(File::delete);
                         } catch (IOException ex) {
                             ex.printStackTrace();
@@ -165,8 +175,8 @@ public class App extends Application {
             try {
                 content = Files.readString(path);
                 content = content.replace("<script src=\"data.js\">", "<script> const data = " + new ObjectMapper().writeValueAsString(data));
-                content = content.replace("<script src=\"", "<script src=\"file:///"+System.getProperty("user.dir")+"\\result\\");
-                content = content.replace("style.css", "file:///"+System.getProperty("user.dir")+"\\result\\style.css");
+                content = content.replace("<script src=\"", "<script src=\"file:///" + System.getProperty("user.dir") + "\\result\\");
+                content = content.replace("style.css", "file:///" + System.getProperty("user.dir") + "\\result\\style.css");
 
                 WebView webView = new WebView();
                 WebEngine webEngine = webView.getEngine();
@@ -200,7 +210,7 @@ public class App extends Application {
             if (result.get() == buttonTypeSave) {
                 try {
                     saveFile.fire();
-                } catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 mainStage.close();
@@ -225,7 +235,7 @@ public class App extends Application {
         scene.setRoot(root);
     }
 
-    public static void updatePreview(){
+    public static void updatePreview() {
         if (previewStage != null && previewStage.isShowing()) {
             Path path = Path.of(System.getProperty("user.dir") + "\\result\\timeline.html");
             String content;
@@ -250,6 +260,7 @@ public class App extends Application {
             }
         }
     }
+
     public static void main(String[] args) {
         launch();
     }
