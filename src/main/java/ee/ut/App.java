@@ -1,8 +1,10 @@
 package ee.ut;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import ee.ut.dataObjects.Data;
 import javafx.application.Application;
+import javafx.css.Match;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Parent;
@@ -12,10 +14,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -23,6 +28,8 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * JavaFX App
@@ -41,13 +48,15 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         mainStage = stage;
         previewStage = new Stage();
-        Path resultFolder = Path.of(System.getProperty("user.dir") + "\\result");
+        System.setProperty("user.dir", System.getProperty("user.dir") + "\\result");
+        Path resultFolder = Path.of(System.getProperty("user.dir"));
         if (!Files.exists(resultFolder)) {
             Files.createDirectory(resultFolder);
             Files.write(resultFolder.resolve("style.css"), Objects.requireNonNull(App.class.getResourceAsStream("style.css")).readAllBytes());
             Files.write(resultFolder.resolve("timeline.html"), Objects.requireNonNull(App.class.getResourceAsStream("timeline.html")).readAllBytes());
             Files.write(resultFolder.resolve("timelineGenerator.js"), Objects.requireNonNull(App.class.getResourceAsStream("timelineGenerator.js")).readAllBytes());
         }
+        data = null;
         scene = new Scene(loadFXML("primary"), 640, 480);
 
         stage.setScene(scene);
@@ -64,8 +73,45 @@ public class App extends Application {
         if (isNew) {
             data = new Data();
         } else {
-            //todo implement loading data from js
-            throw new IllegalArgumentException("Editing and existing timeline not yet implemented");
+
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Javascript files", "*.js"));
+            fileChooser.setTitle("Vali soovitud ajajoone js fail");
+            fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+            File file = fileChooser.showOpenDialog(new Stage());
+            if (file != null) {
+                try {
+                    String dataFromFile = Files.readString(file.toPath());
+                    JsonMapper mapper = new JsonMapper();
+                    data = mapper.readValue(dataFromFile.replaceFirst(".*?\\{", "{"), Data.class);
+                    System.setProperty("user.dir", file.getParentFile().getAbsolutePath());
+                    data.getEvents().stream()
+                            .filter(e -> e.getHtmlContent().contains("<img src=\"images"))
+                            .forEach(e -> {
+                                Pattern pattern = Pattern.compile("<img src=\"images.*?\"");
+                                Matcher matcher = pattern.matcher(e.getHtmlContent());
+                                while (matcher.find()) {
+                                    String filePath = matcher.group().substring(10, matcher.group().length() - 1);
+                                    File image = new File(System.getProperty("user.dir") + "\\" + filePath);
+                                    if (image.exists()) {
+                                        e.getImagePaths().add(image.toURI());
+                                        e.setHtmlContent(e.getHtmlContent().replaceAll("<img src=\"" + filePath + "\"", "<img src=\"" + image.toURI() + "\""));
+                                    } else {
+                                        System.out.println(System.getProperty("user.dir" + "\\" + filePath));
+                                    }
+                                }
+                            });
+                } catch (IOException e) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setHeaderText("Vigane fail");
+                    alert.setContentText("Ei õnnestunud sellest failist ajajoont luua");
+                    alert.showAndWait();
+                    return;
+
+                }
+            } else {
+                return;
+            }
         }
 
         settingsTab = new Tab();
@@ -83,7 +129,7 @@ public class App extends Application {
         Menu fileMenu = new Menu("file");
         MenuItem saveFile = new MenuItem("Salvesta ajajoon");
         saveFile.setOnAction(event -> {
-            Path resultFolder = Path.of(System.getProperty("user.dir") + "\\result");
+            Path resultFolder = Path.of(System.getProperty("user.dir"));
             Path file = resultFolder.resolve("data.js");
             Path imageFolder = resultFolder.resolve("images");
             try {
@@ -99,9 +145,9 @@ public class App extends Application {
                             }
                             AtomicInteger largestNumber = new AtomicInteger(
                                     Arrays.stream(eventImageFolder.toFile().listFiles())
-                                    .map(imageFile -> Integer.parseInt(imageFile.getName().split("\\.")[0]))
-                                    .max(Integer::compareTo)
-                                    .orElse(0)
+                                            .map(imageFile -> Integer.parseInt(imageFile.getName().split("\\.")[0]))
+                                            .max(Integer::compareTo)
+                                            .orElse(0)
                             );
                             e.getImagePaths().forEach(path -> {
                                 try {
@@ -119,7 +165,7 @@ public class App extends Application {
                                 }
                             });
                             Arrays.stream(eventImageFolder.toFile().listFiles())
-                                    .filter(imageFile -> !e.getHtmlContent().contains("src=\"images/"+e.getUuid().toString()+"/"+imageFile.getName()+"\""))
+                                    .filter(imageFile -> !e.getHtmlContent().contains("src=\"images/" + e.getUuid().toString() + "/" + imageFile.getName() + "\""))
                                     .forEach(File::delete);
                         } catch (IOException ex) {
                             ex.printStackTrace();
@@ -149,13 +195,13 @@ public class App extends Application {
         MenuItem showPreview = new MenuItem("kuva eelvaade");
 
         showPreview.setOnAction(actionEvent -> {
-            Path path = Path.of(System.getProperty("user.dir") + "\\result\\timeline.html");
+            Path path = Path.of(System.getProperty("user.dir") + "\\timeline.html");
             String content;
             try {
                 content = Files.readString(path);
                 content = content.replace("<script src=\"data.js\">", "<script> const data = " + new ObjectMapper().writeValueAsString(data));
-                content = content.replace("<script src=\"", "<script src=\"file:///"+System.getProperty("user.dir")+"\\result\\");
-                content = content.replace("style.css", "file:///"+System.getProperty("user.dir")+"\\result\\style.css");
+                content = content.replace("<script src=\"", "<script src=\"file:///" + System.getProperty("user.dir") + "\\");
+                content = content.replace("style.css", "file:///" + System.getProperty("user.dir") + "\\style.css");
 
                 WebView webView = new WebView();
                 WebEngine webEngine = webView.getEngine();
@@ -174,29 +220,31 @@ public class App extends Application {
 
         //Confirmation on closing
         mainStage.setOnCloseRequest(evt -> {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Kinnita sulgemine");
-            alert.setHeaderText("Kinnita sulgemine");
-            alert.setContentText("Oled sulgemas programmi. Kas soovid jätkata?");
+            if (data != null) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Kinnita sulgemine");
+                alert.setHeaderText("Kinnita sulgemine");
+                alert.setContentText("Oled sulgemas programmi. Kas soovid jätkata?");
 
-            ButtonType buttonTypeSave = new ButtonType("Salvesta ja jätka");
-            ButtonType buttonTypeClose = new ButtonType("Jätka");
-            ButtonType buttonTypeCancel = new ButtonType("Katkesta");
+                ButtonType buttonTypeSave = new ButtonType("Salvesta ja jätka");
+                ButtonType buttonTypeClose = new ButtonType("Jätka");
+                ButtonType buttonTypeCancel = new ButtonType("Katkesta");
 
-            alert.getButtonTypes().setAll(buttonTypeSave, buttonTypeClose, buttonTypeCancel);
+                alert.getButtonTypes().setAll(buttonTypeSave, buttonTypeClose, buttonTypeCancel);
 
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == buttonTypeSave) {
-                try {
-                    saveFile.fire();
-                } catch (Exception e){
-                    e.printStackTrace();
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == buttonTypeSave) {
+                    try {
+                        saveFile.fire();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    mainStage.close();
+                } else if (result.get() == buttonTypeClose) {
+                    mainStage.close();
+                } else if (result.get() == buttonTypeCancel) {
+                    evt.consume();
                 }
-                mainStage.close();
-            } else if (result.get() == buttonTypeClose) {
-                mainStage.close();
-            } else if (result.get() == buttonTypeCancel) {
-                evt.consume();
             }
         });
 
@@ -214,15 +262,15 @@ public class App extends Application {
         scene.setRoot(root);
     }
 
-    public static void updatePreview(){
+    public static void updatePreview() {
         if (previewStage != null && previewStage.isShowing()) {
-            Path path = Path.of(System.getProperty("user.dir") + "\\result\\timeline.html");
+            Path path = Path.of(System.getProperty("user.dir") + "\\timeline.html");
             String content;
             try {
                 content = Files.readString(path);
                 content = content.replace("<script src=\"data.js\">", "<script> const data = " + new ObjectMapper().writeValueAsString(data));
-                content = content.replace("<script src=\"", "<script src=\"file:///" + System.getProperty("user.dir") + "\\result\\");
-                content = content.replace("style.css", "file:///" + System.getProperty("user.dir") + "\\result\\style.css");
+                content = content.replace("<script src=\"", "<script src=\"file:///" + System.getProperty("user.dir") + "\\");
+                content = content.replace("style.css", "file:///" + System.getProperty("user.dir") + "\\style.css");
 
                 WebView webView = new WebView();
                 WebEngine webEngine = webView.getEngine();
@@ -239,6 +287,7 @@ public class App extends Application {
             }
         }
     }
+
     public static void main(String[] args) {
         launch();
     }

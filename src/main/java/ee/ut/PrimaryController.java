@@ -12,4 +12,9 @@ public class PrimaryController {
     private void startNewTimeline() throws IOException {
         startTimeline(true);
     }
+
+    @FXML
+    private void editPreviousTimeline() throws IOException{
+        startTimeline(false);
+    }
 }

@@ -1,1 +1,1 @@
-const data = {"labelType":"LINE","eventSpace":200,"events":[{"queueNr":2,"label":"","htmlContent":"<p style=\"font-family: 'Rubik';\">sügis</p>","packed":false,"uuid":"692c0b22-2048-4bbb-9e29-70f0fee1510e","text":"sügis"}]}
+const data = {"labelType":"LINE","eventSpace":200,"events":[{"queueNr":1,"label":"","htmlContent":"<p style=\"font-family: 'Rubik';\">Insert text here</p><img src=\"images/9b05b688-de47-40bf-bb69-028b33c2ca7e/1.jpg\" style=\"width: 207px; height: 210px;\">","packed":false,"uuid":"9b05b688-de47-40bf-bb69-028b33c2ca7e"}]}
