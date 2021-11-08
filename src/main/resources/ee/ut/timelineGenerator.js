@@ -3,11 +3,11 @@ const scriptContainer = document.querySelector(".timelineScript");
 const timelineDiv = document.createElement("div");
 timelineDiv.classList.add("timeline")
 
-var modalTemp
-var boolModalTemp
+let modalTemp
+let boolModalTemp
 
-var height = data.eventSpace
-var contentHeight = data.eventSpace * 2 - 30
+const height = data.eventSpace
+const contentHeight = data.eventSpace * 2 - 30
 timelineDiv.style.gridAutoRows = height + 'px'
 
 //Generate html
