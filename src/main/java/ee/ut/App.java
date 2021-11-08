@@ -183,7 +183,7 @@ public class App extends Application {
     }
 
     public static void updatePreview(){
-        if (previewStage.isShowing()) {
+        if (previewStage != null && previewStage.isShowing()) {
             Path path = Path.of(System.getProperty("user.dir") + "\\result\\timeline.html");
             String content;
             try {
