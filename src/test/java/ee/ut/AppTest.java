@@ -62,7 +62,7 @@ public class AppTest extends ApplicationTest {
         robot.clickOn("Salvesta ajajoon");
         Thread.sleep(100);
         //Check saved data
-        String savedData = Files.readString(Path.of(System.getProperty("user.dir") + "\\result\\data.js"));
+        String savedData = Files.readString(Path.of(System.getProperty("user.dir") + "\\data.js"));
         Assert.assertTrue(savedData.contains("DOT")); //labelType is "PUNKT"
         Assert.assertTrue(savedData.contains("300")); //eventSpace is "300"
         Assert.assertTrue(savedData.contains("\"packed\":true")); //eventsPacked is checked
@@ -73,7 +73,7 @@ public class AppTest extends ApplicationTest {
 
     @Override
     public void stop(){
-        deleteDirectory(Paths.get(System.getProperty("user.dir")+"/result").toFile());
+        deleteDirectory(Paths.get(System.getProperty("user.dir")).toFile());
         System.setProperty("user.dir", System.getProperty("user.dir").replace("/src/test",""));
        
     }
