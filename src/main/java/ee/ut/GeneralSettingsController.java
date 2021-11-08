@@ -13,7 +13,7 @@ import static ee.ut.logic.Editor.saveSettings;
 
 public class GeneralSettingsController {
     @FXML
-    private Button saveButton;
+    private Button saveButton1;
 
     @FXML
     private CheckBox eventsPacked;

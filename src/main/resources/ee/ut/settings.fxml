@@ -26,7 +26,7 @@
             <CheckBox fx:id="eventsPacked" text="Sündmused kokku pakitud" />
         </VBox>
         <HBox alignment="CENTER">
-            <Button fx:id="saveButton" text="Salvesta" onAction="#save"/>
+            <Button fx:id="saveButton1" text="Salvesta" onAction="#save"/>
         </HBox>
     </children>
 
