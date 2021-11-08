@@ -275,7 +275,7 @@ public class EventsController implements Initializable {
 
         savedEvents.getColumns().addAll(editButton, deleteButton);
 
-        File css = new File(System.getProperty("user.dir")+"\\result\\style.css");
+        File css = new File(System.getProperty("user.dir")+"\\style.css");
         cssText = "";
         imageResizeScript = "";
         try {
