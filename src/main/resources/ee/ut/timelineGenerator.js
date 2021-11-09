@@ -3,11 +3,12 @@ const scriptContainer = document.querySelector(".timelineScript");
 const timelineDiv = document.createElement("div");
 timelineDiv.classList.add("timeline")
 
-var modalTemp
-var boolModalTemp
+//Necessary to close modal box by clicking outside of it.
+let modalTemp;
+let boolModalTemp;
 
-var height = data.eventSpace
-var contentHeight = data.eventSpace * 2 - 30
+const height = data.eventSpace
+const contentHeight = data.eventSpace * 2 - 50
 timelineDiv.style.gridAutoRows = height + 'px'
 
 //Generate html
@@ -21,10 +22,17 @@ for (const eventContent of data.events) {
     timelineDiv.appendChild(addContainer(eventContent))
 }
 
+
 //Add generated html to timeline div
 scriptContainer.parentNode.insertBefore(timelineDiv, scriptContainer)
 
 
+//To get size of element, the element need to be rendered in the Dom.
+//Add button and hide overflowing content.
+handleOverflowingContent()
+
+
+//--------FUNCTIONS--------
 function addContainer(content) {
     const event = document.createElement("div");
     event.classList.add('timelineEvent')
@@ -44,11 +52,39 @@ function addContainer(content) {
     section.appendChild(addIcon(content.label))
     section.appendChild(contentDiv)
 
-    section.appendChild(addReadMore(content))
     eventBox.appendChild(section)
     event.appendChild(eventBox)
 
     return event
+}
+
+//Adding  center line
+function addCustomContainer(className) {
+    const newContainer = document.createElement("div");
+    newContainer.classList.add(className);
+    return newContainer
+}
+
+function addIcon(label) {
+    const icon = document.createElement('div')
+    icon.classList.add('icon')
+    if (data.labelType === "TEXT") {
+        const text = document.createElement('p')
+        text.textContent = label
+        icon.appendChild(text)
+    }
+
+    return icon
+}
+
+
+function handleOverflowingContent() {
+    for (let [index, contentDiv] of document.querySelectorAll(".timelineContent").entries()) {
+        if (contentDiv.scrollHeight > contentHeight) {
+            contentDiv.parentNode.insertBefore(addReadMore(data.events[index]), contentDiv.nextSibling)
+            contentDiv.style.overflow = "hidden"
+        }
+    }
 }
 
 function addReadMore(content) {
@@ -79,7 +115,7 @@ function addModalBox(content) {
     const modalContent = document.createElement('div')
     modalContent.classList.add('timelineModalContent')
 
-    const span =  document.createElement('span')
+    const span =  document.createElement('button')
     span.textContent = 'X'
 
     const text =  document.createElement('p')
@@ -101,23 +137,4 @@ function addModalBox(content) {
     modalContent.appendChild(text)
     modal.appendChild(modalContent)
     return modal
-}
-
-//Adding  center line
-function addCustomContainer(className) {
-    const newContainer = document.createElement("div");
-    newContainer.classList.add(className);
-    return newContainer
-}
-
-function addIcon(label) {
-    const icon = document.createElement('div')
-    icon.classList.add('icon')
-    if (data.labelType === "TEXT") {
-        const text = document.createElement('p')
-        text.textContent = label
-        icon.appendChild(text)
-    }
-
-    return icon
 }
