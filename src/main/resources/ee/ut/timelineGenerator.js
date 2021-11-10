@@ -3,6 +3,7 @@ const scriptContainer = document.querySelector(".timelineScript");
 const timelineDiv = document.createElement("div");
 timelineDiv.classList.add("timeline")
 
+
 //Necessary to close modal box by clicking outside of it.
 let modalTemp;
 let boolModalTemp;
