@@ -73,15 +73,31 @@
     right: -10px;
 }
 
-.timelineEvent .icon {
+.timelineEvent .dot,
+.timelineEvent .icon,
+.timelineEvent .line{
     position: absolute;
     z-index: 1;
     background:  #517DB9;
+    border-radius: 30%;
+    box-shadow: 0 0 0 4px #2C5697, inset 0 2px 0 rgba(0,0,0,0.08), 0 3px 0 4px rgba(0,0,0,0.05);
+
+}
+
+.timelineEvent .line {
+    height: 0px;
+    width: 30px;
+}
+
+.timelineEvent .dot {
+    height: 20px;
+    width: 20px;
+}
+
+.timelineEvent .icon {
     height: 70px;
     width: 70px;
-    border-radius: 30%;
     font-size: 15px;
-    box-shadow: 0 0 0 4px #2C5697, inset 0 2px 0 rgba(0,0,0,0.08), 0 3px 0 4px rgba(0,0,0,0.05);
 }
 
 .icon p {
@@ -92,7 +108,31 @@
     padding: 3px;
 }
 
-.timelineEvent:nth-child(even) .icon {
+.timelineEvent .line {
+    top: 35px;
+}
+
+.timelineEvent:nth-child(even) .line {
+    left: -70px;
+}
+
+.timelineEvent:nth-child(odd) .line {
+    right: -70px;
+}
+
+.timelineEvent .dot {
+    top: 25px;
+}
+
+.timelineEvent:nth-child(even) .dot {
+    left: -65px;
+}
+
+.timelineEvent:nth-child(odd) .dot {
+    right: -65px;
+}
+
+.timelineEvent:nth-child(even) .icon{
     left: -90px;
 }
 
@@ -194,6 +234,7 @@
 
 @media only screen and (max-width: 640px) {
     .timeline {
+        top: 20px;
         display: flex;
         flex-direction: column;
         margin-left: 20px;
@@ -218,19 +259,21 @@
         transform: translateX(-50%);
     }
 
-    .timelineEvent:nth-child(even) .icon {
+    .timelineEvent .icon {
         left: -90px;
     }
 
-    .timelineEvent:nth-child(odd) .icon {
-        left: -90px;
+    .timelineEvent .dot {
+        left: -65px;
     }
 
-    .timelineEvent:nth-child(even) .timelineSection::before,
-    .timelineEvent:nth-child(odd) .timelineSection::before{
-        left: -5px;
-        height: 15px;
-        width: 15px;
+    .timelineEvent .line {
+        left: -70px;
+    }
+
+
+    .timelineSection::before{
+        left: -10px;
         z-index: 0;
     }
 

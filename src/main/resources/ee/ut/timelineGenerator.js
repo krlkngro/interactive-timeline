@@ -66,11 +66,18 @@ function addCustomContainer(className) {
 
 function addIcon(label) {
     const icon = document.createElement('div')
-    icon.classList.add('icon')
+
     if (data.labelType === "TEXT") {
         const text = document.createElement('p')
+        icon.classList.add('icon')
         text.textContent = label
         icon.appendChild(text)
+    }
+    else if (data.labelType === "LINE") {
+        icon.classList.add('line')
+    }
+    else if (data.labelType === "DOT") {
+        icon.classList.add('dot')
     }
 
     return icon
