@@ -73,9 +73,9 @@
     right: -10px;
 }
 
-.timelineEvent .dot,
-.timelineEvent .icon,
-.timelineEvent .line{
+.timelineEvent .dotIcon,
+.timelineEvent .textIcon,
+.timelineEvent .lineIcon{
     position: absolute;
     z-index: 1;
     background:  #517DB9;
@@ -84,23 +84,23 @@
 
 }
 
-.timelineEvent .line {
-    height: 0px;
+.timelineEvent .lineIcon {
+    height: 0;
     width: 30px;
 }
 
-.timelineEvent .dot {
+.timelineEvent .dotIcon {
     height: 20px;
     width: 20px;
 }
 
-.timelineEvent .icon {
+.timelineEvent .textIcon {
     height: 70px;
     width: 70px;
     font-size: 15px;
 }
 
-.icon p {
+.textIcon p {
     text-align: center;
     position: relative;
     top: 30%;
@@ -108,35 +108,35 @@
     padding: 3px;
 }
 
-.timelineEvent .line {
+.timelineEvent .lineIcon {
     top: 35px;
 }
 
-.timelineEvent:nth-child(even) .line {
+.timelineEvent:nth-child(even) .lineIcon {
     left: -70px;
 }
 
-.timelineEvent:nth-child(odd) .line {
+.timelineEvent:nth-child(odd) .lineIcon {
     right: -70px;
 }
 
-.timelineEvent .dot {
+.timelineEvent .dotIcon {
     top: 25px;
 }
 
-.timelineEvent:nth-child(even) .dot {
+.timelineEvent:nth-child(even) .dotIcon {
     left: -65px;
 }
 
-.timelineEvent:nth-child(odd) .dot {
+.timelineEvent:nth-child(odd) .dotIcon {
     right: -65px;
 }
 
-.timelineEvent:nth-child(even) .icon{
+.timelineEvent:nth-child(even) .textIcon{
     left: -90px;
 }
 
-.timelineEvent:nth-child(odd) .icon {
+.timelineEvent:nth-child(odd) .textIcon {
     right: -90px;
 }
 
@@ -259,15 +259,15 @@
         transform: translateX(-50%);
     }
 
-    .timelineEvent .icon {
+    .timelineEvent .textIcon {
         left: -90px;
     }
 
-    .timelineEvent .dot {
+    .timelineEvent .dotIcon {
         left: -65px;
     }
 
-    .timelineEvent .line {
+    .timelineEvent .lineIcon {
         left: -70px;
     }
 

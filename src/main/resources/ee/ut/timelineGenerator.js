@@ -69,15 +69,15 @@ function addIcon(label) {
 
     if (data.labelType === "TEXT") {
         const text = document.createElement('p')
-        icon.classList.add('icon')
+        icon.classList.add('textIcon')
         text.textContent = label
         icon.appendChild(text)
     }
     else if (data.labelType === "LINE") {
-        icon.classList.add('line')
+        icon.classList.add('lineIcon')
     }
     else if (data.labelType === "DOT") {
-        icon.classList.add('dot')
+        icon.classList.add('dotIcon')
     }
 
     return icon
