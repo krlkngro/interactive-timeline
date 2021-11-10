@@ -47,7 +47,6 @@ function addContainer(content) {
     const contentDiv = document.createElement("div");
     contentDiv.classList.add("timelineContent")
     contentDiv.insertAdjacentHTML('beforeend', content.htmlContent);
-    contentDiv.style.height = contentHeight + 'px'
 
     section.appendChild(addIcon(content.label))
     section.appendChild(contentDiv)
@@ -81,7 +80,10 @@ function addIcon(label) {
 function handleOverflowingContent() {
     for (let [index, contentDiv] of document.querySelectorAll(".timelineContent").entries()) {
         if (contentDiv.scrollHeight > contentHeight) {
+            console.log(contentDiv.scrollHeight)
             contentDiv.parentNode.insertBefore(addReadMore(data.events[index]), contentDiv.nextSibling)
+            contentDiv.style.height = contentHeight + 'px'
+            contentDiv.parentElement.parentElement.style.height = (contentHeight + 125) + 'px'
             contentDiv.style.overflow = "hidden"
         }
     }
