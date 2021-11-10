@@ -1,5 +1,6 @@
 package ee.ut.logic;
 
+import ee.ut.App;
 import ee.ut.dataObjects.Data;
 import ee.ut.dataObjects.Event;
 
@@ -34,10 +35,12 @@ public class Editor {
         for (int i = 1; i <= events.size(); i++) {
             events.get(i-1).setQueueNr(i);
         }
+        App.updatePreview();
     }
 
     public static void deleteEvent(Data data, Event event) {
         data.getEvents().remove(event);
+        App.updatePreview();
     }
 
     public static void saveSettings(

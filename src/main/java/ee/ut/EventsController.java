@@ -25,6 +25,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import static ee.ut.App.getData;
@@ -122,6 +123,7 @@ public class EventsController implements Initializable {
                 if (foreground == null) {
                     editorInitialized = false;
                     startEdit();
+                    return;
                 }
                 HBox colorParent = (HBox) foreground.getParent();
                 foreground.setVisible(false);
@@ -236,8 +238,22 @@ public class EventsController implements Initializable {
             private final Button button = new Button("Kustuta");
             {
                 button.setOnAction(event -> {
-                    deleteEvent(getData(), getTableRow().getItem());
-                    savedEvents.refresh();
+                    //Confirmation on deleting
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle("Kinnita kustutamine");
+                    alert.setHeaderText("Kinnita kustutamine");
+                    alert.setContentText("Oled kustutamas sündmust. Kas soovid jätkata?");
+
+                    ButtonType buttonTypeDelete = new ButtonType("Kustuta");
+                    ButtonType buttonTypeCancel = new ButtonType("Katkesta");
+
+                    alert.getButtonTypes().setAll(buttonTypeDelete, buttonTypeCancel);
+
+                    Optional<ButtonType> result = alert.showAndWait();
+                    if (result.get() == buttonTypeDelete) {
+                        deleteEvent(getData(), getTableRow().getItem());
+                        savedEvents.refresh();
+                    }
                 });
             }
 
@@ -259,7 +275,7 @@ public class EventsController implements Initializable {
 
         savedEvents.getColumns().addAll(editButton, deleteButton);
 
-        File css = new File(System.getProperty("user.dir")+"\\result\\style.css");
+        File css = new File(System.getProperty("user.dir")+"\\style.css");
         cssText = "";
         imageResizeScript = "";
         try {
