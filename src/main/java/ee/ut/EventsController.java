@@ -115,8 +115,8 @@ public class EventsController implements Initializable {
             };
             sleeper.setOnSucceeded(event -> {
                 ComboBox<String> fontSelection = (ComboBox<String>) htmlEditor.lookupAll(".font-menu-button").toArray(new Node[0])[1];
-                fontSelection.setValue("Rubik");
-                fontSelection.setItems(FXCollections.observableArrayList("Rubik"));
+                fontSelection.setValue("Arial");
+                fontSelection.setItems(FXCollections.observableArrayList("Arial"));
                 fontSelection.setVisible(false);
                 fontSelection.setManaged(false);
                 Node foreground = htmlEditor.lookup(".html-editor-foreground");
