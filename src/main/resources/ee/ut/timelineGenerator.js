@@ -3,7 +3,6 @@ const scriptContainer = document.querySelector(".timelineScript");
 const timelineDiv = document.createElement("div");
 timelineDiv.classList.add("timeline")
 
-
 //Necessary to close modal box by clicking outside of it.
 let modalTemp;
 let boolModalTemp;
@@ -68,7 +67,7 @@ function addCustomContainer(className) {
 function addIcon(label) {
     const icon = document.createElement('div')
 
-    if (data.labelType === "TEXT") {
+    if (data.labelType === "TEXT" && label.length > 0) {
         const text = document.createElement('p')
         icon.classList.add('textIcon')
         text.textContent = label
@@ -77,7 +76,7 @@ function addIcon(label) {
     else if (data.labelType === "LINE") {
         icon.classList.add('lineIcon')
     }
-    else if (data.labelType === "DOT") {
+    else if (data.labelType === "DOT" || label.length === 0) {
         icon.classList.add('dotIcon')
     }
 
@@ -101,7 +100,7 @@ function addReadMore(content) {
     const readMore = document.createElement('div')
     readMore.classList.add('timelineReadMore')
 
-    const modalBoxButton = document.createElement('button')
+    const modalBoxButton = document.createElement('a')
     modalBoxButton.textContent = 'Read more ...'
     modalBoxButton.id = 'event' + content.queueNr
 
@@ -125,7 +124,8 @@ function addModalBox(content) {
     const modalContent = document.createElement('div')
     modalContent.classList.add('timelineModalContent')
 
-    const span =  document.createElement('button')
+    const span =  document.createElement('a')
+    span.classList.add('closeX')
     span.textContent = 'X'
 
     const text =  document.createElement('p')

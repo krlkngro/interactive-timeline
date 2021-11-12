@@ -2,17 +2,22 @@
     position : absolute;
     height: 100%;
     width: 5px;
-    background: #517DB9;
     left: 50%;
     top: 20px;
     transform: translateX(-50%);
+    background: #2C5697;
+    z-index: -1;
+}
+
+h1, h2, h3,
+h4, h5, h6 {
+    margin: 16px 0;
 }
 
 .timeline {
     display: grid;
     grid-gap: 75px;
     grid-column-gap: 110px;
-    /*background-color: white;*/
     background-color: transparent;
     grid-template-columns: 1fr 1fr;
     grid-auto-rows: 300px;
@@ -20,9 +25,9 @@
     width: 85%;
     margin: auto;
     position: relative;
-    color: white;
+    color: #1B365D;
     font-size: 20px;
-    font-family: Rubik Regular, sans-serif;
+    font-family: Arial, sans-serif;
 }
 
 .timeline .empty {
@@ -44,10 +49,13 @@
     content: "";
     height: 20px;
     width: 20px;
-    background: #2C5697 ;
-    z-index: 1;
+    background: #2C5697;
+    z-index: -1;
     top: 25px;
     transform: rotate(45deg);
+    border:1px solid #2C5697;
+    outline:1px solid white;
+    outline-offset:-5px;
 }
 
 
@@ -61,8 +69,11 @@
 .timelineSection{
     position: relative;
     width: 100%;
-    background-color: #2C5697;
+    background-color: white;
     border-radius: 5px;
+    border:1px solid #2C5697;
+    outline:1px solid #2C5697;
+    outline-offset:-5px;
 }
 
 .timelineEvent:nth-child(even) .timelineSection::before{
@@ -78,34 +89,34 @@
 .timelineEvent .lineIcon{
     position: absolute;
     z-index: 1;
-    background:  #517DB9;
+    background:  white;
     border-radius: 30%;
-    box-shadow: 0 0 0 4px #2C5697, inset 0 2px 0 rgba(0,0,0,0.08), 0 3px 0 4px rgba(0,0,0,0.05);
-
 }
 
 .timelineEvent .lineIcon {
-    height: 0;
     width: 30px;
+    box-shadow: 0 0 0 4px #2C5697, inset 0 2px 0 rgba(0,0,0,0.08), 0 3px 0 4px rgba(0,0,0,0.05);
 }
 
 .timelineEvent .dotIcon {
-    height: 20px;
-    width: 20px;
+    height: 15px;
+    width: 15px;
+    background: #2C5697;
+    border:3px solid white;
+    outline-offset:-5px;
 }
 
 .timelineEvent .textIcon {
-    height: 70px;
     width: 70px;
     font-size: 15px;
+    position: absolute;
+    background-color: white;
+    height: fit-content;
+    top: 6px;
 }
 
 .textIcon p {
     text-align: center;
-    position: relative;
-    top: 30%;
-    transform: translateY(-50%);
-    padding: 3px;
 }
 
 .timelineEvent .lineIcon {
@@ -154,37 +165,33 @@
     height: 100%;
 }
 
-.timelineReadMore button{
+.timelineReadMore a{
+    font-size: 15px;
     width: auto;
     height: 40px;
-    padding: 10px 25px;
-    border: 2px solid white;
-    font-weight: 500;
-    background: transparent;
+    padding-bottom: 10px;
     cursor: pointer;
-    position: relative;
-    display: inline-block;
-    color: white;
+    color: #1B365D;
+    background-color: white;
+    font-weight: bold;
 }
 
-.timelineReadMore button:after{
-    position: absolute;
-    content: "";
-    top: 5px;
-    width: auto;
-    right: 5px;
-    left: 5px;
-    height: 70%;
-    border: 1px solid white;
-    opacity: 0;
-}
-
-.timelineReadMore button:hover::after{
+.timelineReadMore a:hover{
     opacity: 1;
+    text-decoration: underline;
+}
+
+.timelineReadMore .closeX{
+    top: 0;
+    font-size: 25px;
+    font-weight: normal;
+    position: sticky;
+    background-color: transparent;
+    float: right;
+    right: -20px;
 }
 
 .timelineContent  img,
-
 .timelineContent  video, .timelineContent  iframe,
 .timelineModalContent img,
 .timelineModalContent  video, .timelineModalContent  iframe{
@@ -212,20 +219,24 @@
 
 .timelineModal button {
     float: right;
+
 }
 
 .timelineModalContent {
     position: relative;
-    background-color: #2C5697;
+    background-color: white;
+    border-radius: 5px;
+    border:1px solid #2C5697;
+    outline:1px solid #2C5697;
+    outline-offset:-5px;
     margin: auto;
-    padding: 20px;
-    width: 65%;
+    padding: 50px;
+    width: 55%;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
     -webkit-animation-name: animatetop;
     -webkit-animation-duration: 0.4s;
     animation-name: animatetop;
     animation-duration: 0.4s;
-    border-radius: 5px;
     height: 80%;
     overflow-y: auto;
     top:50%;
@@ -247,7 +258,6 @@
     .timelineEventBox {
         width: 100%;
         height: 100%;
-        background-color: #2C5697;
         border-radius: 5px;
     }
 
