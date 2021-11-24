@@ -87,7 +87,7 @@ function addIcon(label) {
 
 
 function addModalBoxImg() {
-    for (let img of document.querySelectorAll("img").entries()) {
+    for (let img of document.querySelectorAll("img")) {
         let modalBox = addModalBox(img, true)
 
         img.onclick = function () {
