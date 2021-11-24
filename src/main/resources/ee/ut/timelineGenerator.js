@@ -26,6 +26,8 @@ for (const eventContent of data.events) {
 //Add generated html to timeline div
 scriptContainer.parentNode.insertBefore(timelineDiv, scriptContainer)
 
+//Add modal box for pictures
+addModalBoxImg()
 
 //To get size of element, the element need to be rendered in the Dom.
 //Add button and hide overflowing content.
@@ -84,11 +86,28 @@ function addIcon(label) {
 }
 
 
+function addModalBoxImg() {
+    for (let img of document.querySelectorAll("img").entries()) {
+
+        let modalBox = addModalBox(img, true)
+
+        img.onclick = function () {
+            modalBox.style.display = 'block'
+            modalTemp = modalBox
+            boolModalTemp = false
+        }
+
+        img.parentNode.insertBefore(modalBox, img)
+
+    }
+}
+
+
 function handleOverflowingContent() {
     for (let [index, contentDiv] of document.querySelectorAll(".timelineContent").entries()) {
         if (contentDiv.scrollHeight > contentHeight) {
-            console.log(contentDiv.scrollHeight)
-            contentDiv.parentNode.insertBefore(addReadMore(data.events[index]), contentDiv.nextSibling)
+            //console.log(contentDiv.scrollHeight)
+            contentDiv.parentNode.insertBefore(addReadMore(data.events[index].htmlContent), contentDiv.nextSibling)
             contentDiv.style.height = contentHeight + 'px'
             contentDiv.parentElement.parentElement.style.height = (contentHeight + 125) + 'px'
             contentDiv.style.overflow = "hidden"
@@ -117,19 +136,26 @@ function addReadMore(content) {
     return readMore
 }
 
-function addModalBox(content) {
+function addModalBox(content, img) {
+
     const modal = document.createElement('div')
     modal.classList.add('timelineModal')
 
-    const modalContent = document.createElement('div')
-    modalContent.classList.add('timelineModalContent')
+    const modalContentDiv = document.createElement('div')
+    modalContentDiv.classList.add('timelineModalContent')
 
     const span =  document.createElement('a')
     span.classList.add('closeX')
     span.textContent = 'X'
 
-    const text =  document.createElement('p')
-    text.insertAdjacentHTML('beforeend', content.htmlContent);
+    let modalContent
+    if (img) {
+        modalContent =  document.createElement('img')
+        modalContent.src = content.src
+    } else {
+        modalContent =  document.createElement('div')
+        modalContent.insertAdjacentHTML('beforeend', content);
+    }
 
     span.onclick = function() {
         modal.style.display = "none";
@@ -143,8 +169,8 @@ function addModalBox(content) {
         boolModalTemp=true
     }
 
-    modalContent.appendChild(span)
-    modalContent.appendChild(text)
-    modal.appendChild(modalContent)
+    modalContentDiv.appendChild(span)
+    modalContentDiv.appendChild(modalContent)
+    modal.appendChild(modalContentDiv)
     return modal
 }

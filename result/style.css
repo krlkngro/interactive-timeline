@@ -181,7 +181,7 @@ h4, h5, h6 {
     text-decoration: underline;
 }
 
-.timelineReadMore .closeX{
+.timelineModalContent .closeX{
     top: 0;
     font-size: 25px;
     font-weight: normal;
@@ -201,6 +201,7 @@ h4, h5, h6 {
     display: block;
     margin-left: auto;
     margin-right: auto;
+    cursor: pointer;
 }
 
 /*Modal css is took from https://www.w3schools.com/howto/howto_css_modals.asp*/
@@ -237,9 +238,10 @@ h4, h5, h6 {
     -webkit-animation-duration: 0.4s;
     animation-name: animatetop;
     animation-duration: 0.4s;
-    height: 80%;
     overflow-y: auto;
     top:50%;
+    height: auto;
+    max-height: 80%;
     transform: translateY(-50%);
 }
 
