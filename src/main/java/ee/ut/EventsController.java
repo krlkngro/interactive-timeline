@@ -161,16 +161,35 @@ public class EventsController implements Initializable {
                         }
                     }
                 });
+
+                Button videoButton = new Button();
+                videoButton.setTooltip(new Tooltip("Insert video"));
+                Image videoButtonIcon = new Image(Objects.requireNonNull(App.class.getResource("outline_movie_black_24dp.png")).toString());
+                ImageView videoButtonIconView = new ImageView(videoButtonIcon);
+                videoButton.setOnAction(actionEvent -> {
+                    TextInputDialog htmlInput = new TextInputDialog("Sisesta video manustuskood");
+                    htmlInput.getEditor().setPrefColumnCount(100);
+                    htmlInput.setHeaderText("");
+                    htmlInput.setTitle("Lisa video koodiga");
+                    htmlInput.setGraphic(null);
+                    htmlInput.showAndWait();
+                    if (htmlInput.getResult() != null && !htmlInput.getResult().equals("Sisesta video manustuskood")) {
+                        htmlEditor.setHtmlText(htmlEditor.getHtmlText().replace("</body>", "<p>" + htmlInput.getResult() + "</p></body>"));
+                    }
+                });
                 htmlEditor.widthProperty().addListener(e -> {
                     Platform.runLater(() -> {
                         if (!colorParent.getChildren().contains(imageButton)) {
                             colorParent.getChildren().add(imageButton);
+                            colorParent.getChildren().add(videoButton);
                         }
                     });
                 });
                 imageButtonIconView.setEffect(lighten);
                 ((StyleableProperty)imageButton.graphicProperty()).applyStyle(null, imageButtonIconView);
-                colorParent.getChildren().add(imageButton);
+                videoButtonIconView.setEffect(lighten);
+                ((StyleableProperty)videoButton.graphicProperty()).applyStyle(null, videoButtonIconView);
+                colorParent.getChildren().addAll(imageButton, videoButton);
 
             });
             new Thread(sleeper).start();
