@@ -139,10 +139,26 @@ public class EventsController implements Initializable {
                 FileChooser imagePicker = new FileChooser();
                 imagePicker.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Images", "*.jpg", "*.jpeg", "*.png", "*.gif", "*.bmp"), new FileChooser.ExtensionFilter("All files", "*"));
                 imageButton.setOnAction(actionEvent -> {
-                    File imageFile = imagePicker.showOpenDialog(htmlEditor.getScene().getWindow());
-                    if (imageFile != null) {
-                        htmlEditor.setHtmlText(htmlEditor.getHtmlText().replace("</body>", "<img src=\"" + imageFile.toURI() + "\"></body>"));
-                        eventToEdit.getImagePaths().add(imageFile.toURI());
+                    Alert addImageType = new Alert(Alert.AlertType.CONFIRMATION, "Kas soovid lisada pilti failist või lingiga?", new ButtonType("Lisa failist"), new ButtonType("Lisa lingiga"), ButtonType.CANCEL);
+                    addImageType.setHeaderText("");
+                    addImageType.setGraphic(null);
+                    addImageType.showAndWait();
+                    if (addImageType.getResult().getText().equals("Lisa failist")) {
+                        File imageFile = imagePicker.showOpenDialog(htmlEditor.getScene().getWindow());
+                        if (imageFile != null) {
+                            htmlEditor.setHtmlText(htmlEditor.getHtmlText().replace("</body>", "<img src=\"" + imageFile.toURI() + "\"></body>"));
+                            eventToEdit.getImagePaths().add(imageFile.toURI());
+                        }
+                    } else if (addImageType.getResult().getText().equals("Lisa lingiga")) {
+                        TextInputDialog urlInput = new TextInputDialog("Sisesta pildi URL");
+                        urlInput.getEditor().setPrefColumnCount(50);
+                        urlInput.setHeaderText("");
+                        urlInput.setTitle("Lisa pilt lingiga");
+                        urlInput.setGraphic(null);
+                        urlInput.showAndWait();
+                        if (urlInput.getResult() != null && !urlInput.getResult().equals("Sisesta pildi URL")) {
+                            htmlEditor.setHtmlText(htmlEditor.getHtmlText().replace("</body>", "<img src=\"" + urlInput.getResult() + "\"></body>"));
+                        }
                     }
                 });
                 htmlEditor.widthProperty().addListener(e -> {
