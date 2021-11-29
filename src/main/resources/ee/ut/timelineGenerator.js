@@ -69,16 +69,16 @@ function addCustomContainer(className) {
 function addIcon(label) {
     const icon = document.createElement('div')
 
-    if (data.labelType === "TEXT" && label.length > 0) {
+    if (data.labelType.toUpperCase() === "TEXT" && label.length > 0) {
         const text = document.createElement('p')
         icon.classList.add('textIcon')
         text.textContent = label
         icon.appendChild(text)
     }
-    else if (data.labelType === "LINE") {
+    else if (data.labelType.toUpperCase() === "LINE") {
         icon.classList.add('lineIcon')
     }
-    else if (data.labelType === "DOT" || label.length === 0) {
+    else if (data.labelType.toUpperCase() === "DOT" || label.length === 0) {
         icon.classList.add('dotIcon')
     }
 

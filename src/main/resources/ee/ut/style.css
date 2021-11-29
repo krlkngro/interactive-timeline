@@ -90,12 +90,13 @@ h4, h5, h6 {
     position: absolute;
     z-index: 1;
     background:  white;
-    border-radius: 30%;
+
 }
 
 .timelineEvent .lineIcon {
     width: 30px;
-    box-shadow: 0 0 0 4px #2C5697, inset 0 2px 0 rgba(0,0,0,0.08), 0 3px 0 4px rgba(0,0,0,0.05);
+    height: 10px;
+    background: #2C5697;
 }
 
 .timelineEvent .dotIcon {
@@ -104,6 +105,7 @@ h4, h5, h6 {
     background: #2C5697;
     border:3px solid white;
     outline-offset:-5px;
+    border-radius: 30%;
 }
 
 .timelineEvent .textIcon {
@@ -120,7 +122,7 @@ h4, h5, h6 {
 }
 
 .timelineEvent .lineIcon {
-    top: 35px;
+    top: 30px;
 }
 
 .timelineEvent:nth-child(even) .lineIcon {
