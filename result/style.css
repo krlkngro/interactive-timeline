@@ -1,0 +1,200 @@
+
+
+.timelineCenter-line{
+    position : absolute;
+    height: 100%;
+    width: 5px;
+    background: #517DB9;
+    left: 50%;
+    top: 20px;
+    transform: translateX(-50%);
+}
+
+.timeline {
+    display: grid;
+    grid-gap: 50px;
+    grid-column-gap: 110px;
+    background-color: white;
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: 300px;
+    height: 100%;
+    width: 85%;
+    margin: auto;
+    position: relative;
+    color: white;
+    font-size: 20px;
+}
+
+.timeline .empty {
+    visibility: collapse;
+}
+
+.timelineEvent {
+    grid-row: span 2;
+    width: 100%;
+    border-radius: 5px;
+    background-color: #2C5697;
+    position: relative;
+    display: flex;
+}
+
+
+.timelineEvent .timelineSection::before {
+    position: absolute;
+    content: "";
+    height: 15px;
+    width: 15px;
+    background: #2C5697 ;
+    z-index: 1;
+    top: 25px;
+    transform: rotate(45deg);
+}
+
+
+.timelineEventBox {
+    width: 100%;
+    padding: 20px 20px 15px;
+    position: relative;
+}
+
+.timelineSection{
+    height: 100%;
+    position: relative;
+    width: 100%;
+}
+
+.timelineEvent:nth-child(even) .timelineSection::before{
+    left: -25px;
+}
+
+.timelineEvent:nth-child(odd) .timelineSection::before{
+    right: -25px;
+}
+
+.timelineEvent .icon {
+    position: absolute;
+    z-index: 1;
+    background:  #517DB9;
+    height: 70px;
+    width: 70px;
+    border-radius: 30%;
+    font-size: 15px;
+    box-shadow: 0 0 0 4px #2C5697, inset 0 2px 0 rgba(0,0,0,0.08), 0 3px 0 4px rgba(0,0,0,0.05);
+}
+
+.icon p {
+    text-align: center;
+    position: relative;
+    top: 30%;
+    transform: translateY(-50%);
+    padding: 3px;
+}
+
+.timelineEvent:nth-child(even) .icon {
+    left: -110px;
+}
+
+.timelineEvent:nth-child(odd) .icon {
+    right: -110px;
+}
+
+.timelineContent {
+    position: relative;
+    overflow: hidden;
+    max-width: 100%;
+    height: 85%;
+}
+
+.timelineReadMore {
+    position:relative;
+    bottom:0;
+    width:100%;
+    padding-top: 10px;
+}
+
+.timelineContent  img,
+.timelineContent  video, .timelineContent  iframe,
+.timelineModalContent img,
+.timelineModalContent  video, .timelineModalContent  iframe{
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/*Modal css is took from https://www.w3schools.com/howto/howto_css_modals.asp*/
+.timelineModal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 2; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    border-radius: 5px;
+    scroll-padding: 20px;
+}
+
+.timelineModalContent {
+    position: relative;
+    background-color: #2C5697;
+    margin: auto;
+    padding: 20px;
+    width: 65%;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s;
+    border-radius: 5px;
+    height: 80%;
+    overflow-y: scroll;
+    top:50%;
+    transform: translateY(-50%);
+    scroll-padding: 20px;
+}
+
+
+@media only screen and (max-width: 640px) {
+    .timeline {
+        margin-left: 20px;
+        padding-left: 50px;
+        left: 20px;
+        width: 80%;
+        display: grid;
+        grid-template-columns: 100%;
+        grid-column-gap: 0;
+        grid-row-gap: 30px;
+
+    }
+    .timelineEventBox {
+        padding: 10px;
+    }
+
+
+    .timelineCenter-line {
+        left: -5px;
+        height: 100%;
+        width: 5px;
+        top: 20px;
+        transform: translateX(-50%);
+    }
+
+    .timelineEvent:nth-child(even) .icon {
+        left: -100px;
+    }
+
+    .timelineEvent:nth-child(odd) .icon {
+        left: -100px;
+    }
+
+    .timelineEvent:nth-child(even) .timelineSection::before,
+    .timelineEvent:nth-child(odd) .timelineSection::before{
+        left: -18px;
+    }
+
+}
