@@ -14,6 +14,11 @@ h4, h5, h6 {
     margin: 16px 0;
 }
 
+* {
+    font-size: 19px;
+    font-family: Arial, sans-serif;
+}
+
 .timeline {
     display: grid;
     grid-gap: 75px;
@@ -196,9 +201,9 @@ h4, h5, h6 {
 .timelineContent  img,
 .timelineContent  video, .timelineContent  iframe,
 .timelineModalContent img,
-.timelineModalContent  video, .timelineModalContent  iframe{
+.timelineModalContent  video, .timelineModalContent  iframe,
+.timelineEditor img, .timelineEditor video, .timelineEditor iframe {
     max-width: 100%;
-    height: auto;
     object-fit: contain;
     display: block;
     margin-left: auto;
