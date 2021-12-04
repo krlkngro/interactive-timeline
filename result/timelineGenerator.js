@@ -33,6 +33,11 @@ addModalBoxImg()
 //Add button and hide overflowing content.
 handleOverflowingContent()
 
+/*document.querySelector("img").addEventListener("load", function ()
+{
+    console.log(document.querySelector("img").clientWidth)
+})*/
+
 
 //--------FUNCTIONS--------
 function addContainer(content) {
@@ -51,6 +56,9 @@ function addContainer(content) {
     contentDiv.insertAdjacentHTML('beforeend', content.htmlContent);
 
     section.appendChild(addIcon(content.label))
+
+    section.appendChild(addPackUnpackButton(contentDiv))
+
     section.appendChild(contentDiv)
 
     eventBox.appendChild(section)
@@ -85,6 +93,32 @@ function addIcon(label) {
     return icon
 }
 
+function addPackUnpackButton(contentDiv) {
+    const packDiv = document.createElement("button");
+    packDiv.textContent = '\u21D3'
+    packDiv.classList.add("pack")
+
+    packDiv.onclick = function () {
+        if (packDiv.className === 'pack') {
+            contentDiv.style.height = 40 + 'px'
+            packDiv.className = 'unpack'
+            packDiv.textContent = '\u21D1'
+        } else if (packDiv.className === 'unpack') {
+            if (contentDiv.classList.contains('overflow')) {
+                contentDiv.style.height = contentHeight + 'px'
+            } else {
+                contentDiv.style.height = 'auto'
+            }
+
+            packDiv.className = 'pack'
+            packDiv.textContent = '\u21D3'
+            console.log(contentDiv.classList)
+        }
+
+    }
+
+    return packDiv
+}
 
 function addModalBoxImg() {
     for (let img of document.querySelectorAll("img")) {
@@ -110,7 +144,7 @@ function handleOverflowingContent() {
             contentDiv.parentNode.insertBefore(addReadMore(data.events[index].htmlContent), contentDiv.nextSibling)
             contentDiv.style.height = contentHeight + 'px'
             contentDiv.parentElement.parentElement.style.height = (contentHeight + 125) + 'px'
-            contentDiv.style.overflow = "hidden"
+            contentDiv.classList.add('overflow');
         }
     }
 }

@@ -15,7 +15,7 @@ h4, h5, h6 {
 }
 
 * {
-    font-size: 19px;
+    font-size: 16px;
     font-family: Arial, sans-serif;
 }
 
@@ -160,10 +160,9 @@ h4, h5, h6 {
 
 .timelineContent {
     position: relative;
-    /*overflow: hidden;*/
     max-width: 100%;
-    height: auto;
     padding: 20px;
+    overflow:hidden;
 }
 
 .timelineReadMore {
@@ -172,19 +171,17 @@ h4, h5, h6 {
     height: 100%;
 }
 
-.timelineReadMore a{
+.timelineReadMore a, button{
     font-size: 15px;
     width: auto;
     height: 40px;
     padding-bottom: 10px;
     cursor: pointer;
-    color: #1B365D;
-    background-color: white;
     font-weight: bold;
+    background: white;
 }
 
-.timelineReadMore a:hover{
-    opacity: 1;
+.timelineReadMore a:hover, button:hover{
     text-decoration: underline;
 }
 
@@ -215,7 +212,7 @@ h4, h5, h6 {
 .timelineModal {
     display: none;
     position: fixed;
-    z-index: 2;
+    z-index: 5;
     left: 0;
     top: 0;
     width: 100%;
@@ -238,7 +235,7 @@ h4, h5, h6 {
     outline:1px solid #2C5697;
     outline-offset:-5px;
     margin: auto;
-    padding: 50px;
+    padding: 50px 50px 20px;
     width: 55%;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
     -webkit-animation-name: animatetop;
@@ -252,6 +249,18 @@ h4, h5, h6 {
     transform: translateY(-50%);
 }
 
+.pack, .unpack {
+    color: #1B365D;
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    z-index: 2;
+    cursor: pointer;
+    font-weight: bold;
+    border: none;
+    background: transparent;
+    font-size: 25px;
+}
 
 @media only screen and (max-width: 640px) {
     .timeline {
