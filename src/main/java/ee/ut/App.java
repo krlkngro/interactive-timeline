@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import ee.ut.dataObjects.Data;
 import javafx.application.Application;
-import javafx.css.Match;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Parent;
@@ -17,10 +16,8 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -159,7 +156,11 @@ public class App extends Application {
                                     }
                                     e.setHtmlContent(e.getHtmlContent().replaceFirst(path.toString(), "images/" + e.getUuid().toString() + "/" + savedImage.getFileName()));
                                 } catch (IOException ex) {
-                                    //todo notify user that copying image failed
+                                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                    alert.setTitle("Teade");
+                                    alert.setHeaderText("Teade");
+                                    alert.setContentText("Piltide salvestamine ebaõnnestus.");
+                                    alert.show();
                                     ex.printStackTrace();
                                 }
                             });
@@ -185,9 +186,18 @@ public class App extends Application {
                 scene.setRoot(loadFXML("primary"));
                 data = null;
             } catch (IOException e) {
-                //todo notify user
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Teade");
+                alert.setHeaderText("Teade");
+                alert.setContentText("Piltide salvestamine ebaõnnestus.");
+                alert.show();
                 e.printStackTrace();
             }
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Teade");
+            alert.setHeaderText("Teade");
+            alert.setContentText("Ajajoon salvestatud.");
+            alert.show();
         });
 
 
