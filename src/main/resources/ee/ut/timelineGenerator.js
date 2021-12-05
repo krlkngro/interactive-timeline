@@ -142,6 +142,7 @@ function addPackUnpackAllButton() {
             if (packDiv.className === 'pack') {
                 sectionDiv.querySelector(".timelineContent").style.height = 45 + 'px'
                 sectionDiv.querySelector("button").textContent = '\u21D3'
+                sectionDiv.querySelector("button").className = 'unpack'
 
             } else if (packDiv.className === 'unpack') {
                 if (sectionDiv.querySelector(".timelineContent").classList.contains('overflow')) {
@@ -150,6 +151,7 @@ function addPackUnpackAllButton() {
                     sectionDiv.querySelector(".timelineContent").style.height = 'auto'
                 }
                 sectionDiv.querySelector("button").textContent = '\u21D1'
+                sectionDiv.querySelector("button").className = 'pack'
             }
 
         }
