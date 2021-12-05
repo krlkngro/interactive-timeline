@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import ee.ut.dataObjects.Data;
 import javafx.application.Application;
-import javafx.css.Match;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Parent;
@@ -17,10 +16,8 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -47,6 +44,7 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         mainStage = stage;
+
         previewStage = new Stage();
         System.setProperty("user.dir", System.getProperty("user.dir") + "\\result");
         Path resultFolder = Path.of(System.getProperty("user.dir"));
@@ -58,6 +56,8 @@ public class App extends Application {
         }
         scene = new Scene(loadFXML("primary"), 640, 480);
 
+        stage.setMinHeight(500);
+        stage.setMinWidth(650);
         stage.setScene(scene);
         stage.show();
     }
@@ -125,7 +125,7 @@ public class App extends Application {
 
         TabPane tabPane = new TabPane(settingsTab, eventsTab);
         MenuBar menuBar = new MenuBar();
-        Menu fileMenu = new Menu("file");
+        Menu fileMenu = new Menu("Fail");
         MenuItem saveFile = new MenuItem("Salvesta ajajoon");
         saveFile.setOnAction(event -> {
             Path resultFolder = Path.of(System.getProperty("user.dir"));
@@ -191,8 +191,8 @@ public class App extends Application {
         });
 
 
-        Menu previewMenu = new Menu("eelvaade");
-        MenuItem showPreview = new MenuItem("kuva eelvaade");
+        Menu previewMenu = new Menu("Eelvaade");
+        MenuItem showPreview = new MenuItem("Kuva eelvaade");
 
         showPreview.setOnAction(actionEvent -> {
             Path path = Path.of(System.getProperty("user.dir") + "\\timeline.html");
