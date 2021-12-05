@@ -47,7 +47,8 @@ public class Editor {
             Data data,
             String labelType,
             String eventSpace,
-            Boolean eventsPacked
+            Boolean eventsPacked,
+            String readMore
     ){
 
         data.setEventSpace(Integer.valueOf(eventSpace));
@@ -63,6 +64,7 @@ public class Editor {
                 event.setPacked(false);
             }
         }
+        data.setReadMore(readMore);
 
     }
 }
