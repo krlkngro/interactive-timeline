@@ -60,7 +60,6 @@ public class AppTest extends ApplicationTest {
         //Save timeline in a file
         robot.clickOn("Fail");
         robot.clickOn("Salvesta ajajoon");
-        robot.clickOn("Choose folder");
         robot.clickOn("Kirjuta üle");
         Thread.sleep(100);
         //Check saved data

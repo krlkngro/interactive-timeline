@@ -129,7 +129,104 @@ public class App extends Application {
         MenuBar menuBar = new MenuBar();
         Menu fileMenu = new Menu("Fail");
         MenuItem saveFile = new MenuItem("Salvesta ajajoon");
+        MenuItem saveFiletoNewDestination = new MenuItem("Salvesta ajajoon teise kausta");
         saveFile.setOnAction(event -> {
+
+            Path resultFolder = Path.of(System.getProperty("user.dir"));
+            Path file = resultFolder.resolve("data.js");
+            while (Files.exists(file)) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Kinnita ülekirjutamine");
+                alert.setHeaderText("Kinnita ülekirjutamine");
+                alert.setContentText("Oled ülekirjutamas olemasolevat ajajoont. Kas soovid jätkata?");
+
+                ButtonType buttonTypeSave = new ButtonType("Kirjuta üle");
+                ButtonType buttonTypeCancel = new ButtonType("Katkesta");
+
+                alert.getButtonTypes().setAll(buttonTypeSave, buttonTypeCancel);
+
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == buttonTypeSave) {
+                    break;
+                } else if (result.get() == buttonTypeCancel) {
+                    return;
+                }
+            }
+            Path imageFolder = resultFolder.resolve("images");
+            try {
+                if (!imageFolder.toFile().exists()) {
+                    Files.createDirectories(imageFolder);
+                }
+                if (data.getEvents().stream().anyMatch(e -> e.getImagePaths().size() > 0)) {
+                    data.getEvents().forEach(e -> {
+                        try {
+                            Path eventImageFolder = imageFolder.resolve(e.getUuid().toString());
+                            if (!eventImageFolder.toFile().exists()) {
+                                Files.createDirectories(eventImageFolder);
+                            }
+                            AtomicInteger largestNumber = new AtomicInteger(
+                                    Arrays.stream(eventImageFolder.toFile().listFiles())
+                                            .map(imageFile -> Integer.parseInt(imageFile.getName().split("\\.")[0]))
+                                            .max(Integer::compareTo)
+                                            .orElse(0)
+                            );
+                            e.getImagePaths().forEach(path -> {
+                                try {
+                                    Path imageFilePath = Path.of(path);
+                                    Path savedImage = imageFilePath;
+                                    if (eventImageFolder.toUri().relativize(path).equals(path) && e.getHtmlContent().contains("src=\"" + path + "\"")) {
+                                        String fileName = imageFilePath.getFileName().toString();
+                                        savedImage = eventImageFolder.resolve(largestNumber.incrementAndGet() + (fileName.contains(".") ? fileName.substring(fileName.lastIndexOf(".")) : ""));
+                                        Files.copy(imageFilePath, savedImage, StandardCopyOption.REPLACE_EXISTING);
+                                    }
+                                    e.setHtmlContent(e.getHtmlContent().replaceFirst(path.toString(), "images/" + e.getUuid().toString() + "/" + savedImage.getFileName()));
+                                } catch (IOException ex) {
+                                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                    alert.setTitle("Teade");
+                                    alert.setHeaderText("Teade");
+                                    alert.setContentText("Piltide salvestamine ebaõnnestus.");
+                                    alert.show();
+                                    ex.printStackTrace();
+                                }
+                            });
+                            Arrays.stream(eventImageFolder.toFile().listFiles())
+                                    .filter(imageFile -> !e.getHtmlContent().contains("src=\"images/" + e.getUuid().toString() + "/" + imageFile.getName() + "\""))
+                                    .forEach(File::delete);
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    });
+
+                }
+                Arrays.stream(imageFolder.toFile().listFiles()).filter(
+                        f -> data.getEvents().stream().noneMatch(e -> e.getUuid().toString().equals(f.getName()))
+                ).forEach(f -> {
+                    if (f.isDirectory()) {
+                        deleteDir(f);
+                    } else {
+                        f.delete();
+                    }
+                });
+                Files.writeString(file, "const data = " + new ObjectMapper().writeValueAsString(data));
+
+                scene.setRoot(loadFXML("primary"));
+                data = null;
+            } catch (IOException e) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Teade");
+                alert.setHeaderText("Teade");
+                alert.setContentText("Piltide salvestamine ebaõnnestus.");
+                alert.show();
+                e.printStackTrace();
+            }
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Teade");
+            alert.setHeaderText("Teade");
+            alert.setContentText("Ajajoon salvestatud.");
+            alert.show();
+        });
+
+        saveFiletoNewDestination.setOnAction(event -> {
 
             DirectoryChooser directoryChooser = new DirectoryChooser();
             directoryChooser.setTitle("Vali kaust kuhu ajajoon salvestada");
@@ -247,7 +344,6 @@ public class App extends Application {
             alert.show();
         });
 
-
         Menu previewMenu = new Menu("Eelvaade");
         MenuItem showPreview = new MenuItem("Kuva eelvaade");
 
@@ -306,6 +402,7 @@ public class App extends Application {
         });
 
         fileMenu.getItems().add(saveFile);
+        fileMenu.getItems().add(saveFiletoNewDestination);
         previewMenu.getItems().add(showPreview);
         menuBar.getMenus().add(fileMenu);
         menuBar.getMenus().add(previewMenu);
