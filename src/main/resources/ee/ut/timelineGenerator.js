@@ -36,6 +36,9 @@ addModalBoxImg()
 //Add button and hide overflowing content.
 handleOverflowingContent()
 
+//Pack or unpack events
+changePackUnpackStyleFirstTime()
+
 
 /*document.querySelector("img").addEventListener("load", function ()
 {
@@ -122,7 +125,7 @@ function addPackUnpackAllButton() {
 
     packDiv.onclick = function () {
 
-        for (let sectionDiv of document.querySelectorAll(".timelineSection")) {
+        for (let [index, sectionDiv] of document.querySelectorAll(".timelineSection").entries()) {
             console.log(sectionDiv)
             changePackUnpackStyle(sectionDiv.querySelector('button'), sectionDiv.querySelector(".timelineContent"), packDiv.className)
         }
@@ -193,6 +196,14 @@ function changePackUnpackStyle(packDiv, contentDiv, className = packDiv.classNam
 
         if (contentDiv.parentElement.querySelector(".timelineReadMore")) {
             contentDiv.parentElement.querySelector(".timelineReadMore").style.display = 'block'
+        }
+    }
+}
+
+function changePackUnpackStyleFirstTime() {
+    for (let [index, sectionDiv] of document.querySelectorAll(".timelineSection").entries()) {
+        if (data.events[index].packed) {
+            changePackUnpackStyle(sectionDiv.querySelector("button"), sectionDiv.querySelector(".timelineContent"), 'pack')
         }
     }
 }
