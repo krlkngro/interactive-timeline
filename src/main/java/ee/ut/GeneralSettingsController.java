@@ -24,6 +24,9 @@ public class GeneralSettingsController {
     @FXML
     private TextField eventSpace;
 
+    @FXML
+    private TextField readMore;
+
     public void initialize() {
         //Allow only numbers in eventSpace textfield
         eventSpace.textProperty().addListener(new ChangeListener<String>() {
@@ -41,7 +44,8 @@ public class GeneralSettingsController {
                 App.getData(),
                 this.labelType.getValue(),
                 this.eventSpace.getText(),
-                this.eventsPacked.isSelected()
+                this.eventsPacked.isSelected(),
+                this.readMore.getText()
         );
         App.updatePreview();
     }
