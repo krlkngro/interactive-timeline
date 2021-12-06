@@ -31,20 +31,14 @@ public class Data {
     public void setLabelType(String labelType) {
         switch(labelType){
             case "Tekst":
-                this.labelType = Type.TEXT;
-                break;
-            case "Joon":
-                this.labelType = Type.LINE;
-                break;
-            case "DOT":
-                this.labelType = Type.DOT;
-                break;
             case "TEXT":
                 this.labelType = Type.TEXT;
                 break;
+            case "Joon":
             case "LINE":
                 this.labelType = Type.LINE;
                 break;
+            case "DOT":
             case "Punkt":
                 this.labelType = Type.DOT;
                 break;
