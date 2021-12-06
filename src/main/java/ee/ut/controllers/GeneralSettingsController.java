@@ -46,7 +46,7 @@ public class GeneralSettingsController {
         });
         this.readMore.setText(data.getReadMore());
         this.eventSpace.setText(String.valueOf(data.getEventSpace()));
-        this.eventsPacked.setSelected(data.getEvents().stream().allMatch(Event::getPacked));
+        this.eventsPacked.setSelected(!data.getEvents().isEmpty() && data.getEvents().stream().allMatch(Event::getPacked));
     }
 
     public void save(ActionEvent actionEvent) {
