@@ -42,7 +42,7 @@ public class Data {
             case "TEXT":
                 this.labelType = Type.TEXT;
                 break;
-            case "JOON":
+            case "LINE":
                 this.labelType = Type.LINE;
                 break;
             case "Punkt":
