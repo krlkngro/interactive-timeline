@@ -1,5 +1,6 @@
-package ee.ut;
+package ee.ut.controllers;
 
+import ee.ut.App;
 import ee.ut.dataObjects.Event;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
