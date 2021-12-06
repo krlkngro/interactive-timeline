@@ -140,7 +140,7 @@ public class App extends Application {
                 alert.setHeaderText("Kinnita ülekirjutamine");
                 alert.setContentText("Oled ülekirjutamas olemasolevat ajajoont. Kas soovid jätkata?");
 
-                ButtonType buttonTypeSave = new ButtonType("Kirjuta üle");
+                ButtonType buttonTypeSave = new ButtonType("Asenda fail");
                 ButtonType buttonTypeCancel = new ButtonType("Katkesta");
 
                 alert.getButtonTypes().setAll(buttonTypeSave, buttonTypeCancel);
