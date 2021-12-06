@@ -31,11 +31,24 @@ public class Editor {
         }
         event.setLabel(label);
         event.setPacked(allEventsPacked);
-        events.add(queueNr-1, event);
+        updateOrder(data.getEvents(), event, queueNr);
+        App.updatePreview();
+    }
+
+    public static void updateOrder(List<Event> events, Event eventToAdd, int queueNr) {
+        int previousNr = events.indexOf(eventToAdd);
+        if (previousNr > -1) {
+            events.remove(previousNr);
+            if (previousNr < events.size() && queueNr-1 > previousNr) {
+                for (int i = previousNr; i < queueNr-1; i++) {
+                    events.get(i).setQueueNr(i+1);
+                }
+            }
+        }
+        events.add(queueNr-1, eventToAdd);
         for (int i = 1; i <= events.size(); i++) {
             events.get(i-1).setQueueNr(i);
         }
-        App.updatePreview();
     }
 
     public static void deleteEvent(Data data, Event event) {
