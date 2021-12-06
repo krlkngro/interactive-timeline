@@ -262,6 +262,18 @@ h4, h5, h6 {
     z-index: 2;
 }
 
+.pack, .unpack {
+    color: #1B365D;
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    z-index: 2;
+    cursor: pointer;
+    font-weight: bold;
+    border: none;
+    background: transparent;
+    font-size: 25px;
+}
 
 
 @media only screen and (max-width: 640px) {

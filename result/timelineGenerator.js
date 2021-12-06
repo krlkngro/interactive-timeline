@@ -23,8 +23,10 @@ for (const eventContent of data.events) {
     timelineDiv.appendChild(addContainer(eventContent))
 }
 
+
 //Add pack/unpack all cells button
 timelineDiv.appendChild(addPackUnpackAllButton())
+
 
 //Add generated html to timeline div
 scriptContainer.parentNode.insertBefore(timelineDiv, scriptContainer)
@@ -35,12 +37,6 @@ addModalBoxImg()
 //To get size of element, the element need to be rendered in the Dom.
 //Add button and hide overflowing content.
 handleOverflowingContent()
-
-
-/*document.querySelector("img").addEventListener("load", function ()
-{
-    console.log(document.querySelector("img").clientWidth)
-})*/
 
 
 //--------FUNCTIONS--------
@@ -97,15 +93,16 @@ function addIcon(label) {
     return icon
 }
 
+
 function addPackUnpackButton(contentDiv, packed) {
     const packDiv = document.createElement("button");
 
     if (packed) {
-        packDiv.textContent = '\u21D1'
-        packDiv.classList.add("pack")
-    } else {
         packDiv.textContent = '\u21D3'
         packDiv.classList.add("unpack")
+    } else {
+        packDiv.textContent = '\u21D1'
+        packDiv.classList.add("pack")
     }
 
     packDiv.onclick = function () {
