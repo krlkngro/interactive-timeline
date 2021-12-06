@@ -36,6 +36,15 @@ public class Data {
             case "Joon":
                 this.labelType = Type.LINE;
                 break;
+            case "DOT":
+                this.labelType = Type.DOT;
+                break;
+            case "TEXT":
+                this.labelType = Type.TEXT;
+                break;
+            case "JOON":
+                this.labelType = Type.LINE;
+                break;
             case "Punkt":
                 this.labelType = Type.DOT;
                 break;

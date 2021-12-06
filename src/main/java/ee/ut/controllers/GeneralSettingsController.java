@@ -2,6 +2,7 @@ package ee.ut.controllers;
 
 import ee.ut.App;
 import ee.ut.dataObjects.Data;
+import ee.ut.dataObjects.Event;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -37,9 +38,15 @@ public class GeneralSettingsController {
             }
         });
         Data data = App.getData();
-        this.labelType.setValue(data.getLabelType().toString());
+        this.labelType.setValue( switch(data.getLabelType().toString()){
+            case "line" -> "Joon";
+            case "text" -> "Tekst";
+            case "dot" -> "Punkt";
+            default -> "appi";
+        });
         this.readMore.setText(data.getReadMore());
         this.eventSpace.setText(String.valueOf(data.getEventSpace()));
+        this.eventsPacked.setSelected(data.getEvents().stream().allMatch(Event::getPacked));
     }
 
     public void save(ActionEvent actionEvent) {
