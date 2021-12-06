@@ -255,6 +255,7 @@ public class EventsController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.savedEvents.setItems(FXCollections.observableList(getData().getEvents()));
+        this.savedEvents.setSelectionModel(null);
 
         // lookupMimeType part necessary to not break tests
         DataFormat format = DataFormat.lookupMimeType("application/x-java-serialized-object") != null?
@@ -294,14 +295,13 @@ public class EventsController implements Initializable {
                     int dropIndex ;
 
                     if (row.isEmpty()) {
-                        dropIndex = callback.getItems().size() ;
+                        updateOrder(getData().getEvents(), draggedEvent, getData().getEvents().size()+1);
                     } else {
-                        dropIndex = row.getIndex();
+                        updateOrder(getData().getEvents(), draggedEvent, row.getItem().getQueueNr());
                     }
-                    updateOrder(getData().getEvents(), draggedEvent, row.getItem().getQueueNr());
 
                     event.setDropCompleted(true);
-                    callback.getSelectionModel().select(dropIndex);
+                    callback.refresh();
                     event.consume();
                 }
             });
