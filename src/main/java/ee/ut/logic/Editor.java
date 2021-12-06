@@ -32,7 +32,6 @@ public class Editor {
         event.setLabel(label);
         event.setPacked(allEventsPacked);
         updateOrder(data.getEvents(), event, queueNr);
-        App.updatePreview();
     }
 
     public static void updateOrder(List<Event> events, Event eventToAdd, int queueNr) {
@@ -49,6 +48,7 @@ public class Editor {
         for (int i = 1; i <= events.size(); i++) {
             events.get(i-1).setQueueNr(i);
         }
+        App.updatePreview();
     }
 
     public static void deleteEvent(Data data, Event event) {
