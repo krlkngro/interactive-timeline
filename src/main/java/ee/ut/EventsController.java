@@ -12,6 +12,10 @@ import javafx.scene.control.*;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DataFormat;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.HTMLEditor;
@@ -29,8 +33,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 import static ee.ut.App.getData;
-import static ee.ut.logic.Editor.deleteEvent;
-import static ee.ut.logic.Editor.saveEvent;
+import static ee.ut.logic.Editor.*;
 
 public class EventsController implements Initializable {
     private Event eventToEdit;
@@ -216,6 +219,59 @@ public class EventsController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.savedEvents.setItems(FXCollections.observableList(getData().getEvents()));
+
+        // lookupMimeType part necessary to not break tests
+        DataFormat format = DataFormat.lookupMimeType("application/x-java-serialized-object") != null?
+                DataFormat.lookupMimeType("application/x-java-serialized-object")
+                :
+                new DataFormat("application/x-java-serialized-object");
+        this.savedEvents.setRowFactory(callback -> {
+            TableRow<Event> row = new TableRow<>();
+
+            row.setOnDragDetected( event -> {
+                if (!row.isEmpty()) {
+                    Integer index = row.getIndex();
+                    Dragboard db = row.startDragAndDrop(TransferMode.MOVE);
+                    db.setDragView(row.snapshot(null, null));
+                    ClipboardContent cc = new ClipboardContent();
+                    cc.put(format, index);
+                    db.setContent(cc);
+                    event.consume();
+                }
+            });
+            row.setOnDragOver(event -> {
+                Dragboard db = event.getDragboard();
+                if (db.hasContent(format)) {
+                    if (row.getIndex() != ((Integer)db.getContent(format)).intValue()) {
+                        event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+                        event.consume();
+                    }
+                }
+            });
+
+            row.setOnDragDropped(event -> {
+                Dragboard db = event.getDragboard();
+                if (db.hasContent(format)) {
+                    int draggedIndex = (Integer) db.getContent(format);
+                    Event draggedEvent = callback.getItems().remove(draggedIndex);
+
+                    int dropIndex ;
+
+                    if (row.isEmpty()) {
+                        dropIndex = callback.getItems().size() ;
+                    } else {
+                        dropIndex = row.getIndex();
+                    }
+                    updateOrder(getData().getEvents(), draggedEvent, row.getItem().getQueueNr());
+
+                    event.setDropCompleted(true);
+                    callback.getSelectionModel().select(dropIndex);
+                    event.consume();
+                }
+            });
+
+            return row ;
+        });
         TableColumn<Event, Void> editButton = new TableColumn<>();
         TableColumn<Event, Void> deleteButton = new TableColumn<>();
         editButton.setCellFactory((param) -> new TableCell<>() {
