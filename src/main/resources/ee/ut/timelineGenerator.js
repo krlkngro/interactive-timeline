@@ -153,8 +153,9 @@ function addReadMore(content) {
     const readMore = document.createElement('div')
     readMore.classList.add('timelineReadMore')
 
-    const modalBoxButton = document.createElement('a')
-    modalBoxButton.textContent = 'Read more ...'
+
+    const modalBoxButton = document.createElement('button')
+    modalBoxButton.textContent = data.readMore
     modalBoxButton.id = 'event' + content.queueNr
 
     const modalBox = addModalBox(content)
