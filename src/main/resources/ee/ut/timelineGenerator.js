@@ -11,6 +11,7 @@ const height = data.eventSpace
 const contentHeight = data.eventSpace * 2 - 50
 timelineDiv.style.gridAutoRows = height + 'px'
 
+
 //Generate html
 for (const eventContent of data.events) {
     if (eventContent.queueNr === 1) {
@@ -22,6 +23,8 @@ for (const eventContent of data.events) {
     timelineDiv.appendChild(addContainer(eventContent))
 }
 
+//Add pack/unpack all cells button
+timelineDiv.appendChild(addPackUnpackAllButton())
 
 //Add generated html to timeline div
 scriptContainer.parentNode.insertBefore(timelineDiv, scriptContainer)
@@ -32,6 +35,10 @@ addModalBoxImg()
 //To get size of element, the element need to be rendered in the Dom.
 //Add button and hide overflowing content.
 handleOverflowingContent()
+
+//Pack or unpack events
+changePackUnpackStyleFirstTime()
+
 
 /*document.querySelector("img").addEventListener("load", function ()
 {
@@ -57,7 +64,7 @@ function addContainer(content) {
 
     section.appendChild(addIcon(content.label))
 
-    section.appendChild(addPackUnpackButton(contentDiv))
+    section.appendChild(addPackUnpackButton(contentDiv, content.packed))
 
     section.appendChild(contentDiv)
 
@@ -93,31 +100,114 @@ function addIcon(label) {
     return icon
 }
 
-function addPackUnpackButton(contentDiv) {
-    const packDiv = document.createElement("button");
-    packDiv.textContent = '\u21D3'
-    packDiv.classList.add("pack")
+function addPackUnpackButton(contentDiv, packed) {
+    let packDiv = document.createElement("button");
+
+    if (packed) {
+        packDiv.textContent = '\u21D3'
+        packDiv.classList.add("unpack")
+    } else {
+        packDiv.textContent = '\u21D1'
+        packDiv.classList.add("pack")
+    }
 
     packDiv.onclick = function () {
-        if (packDiv.className === 'pack') {
-            contentDiv.style.height = 40 + 'px'
-            packDiv.className = 'unpack'
-            packDiv.textContent = '\u21D1'
-        } else if (packDiv.className === 'unpack') {
-            if (contentDiv.classList.contains('overflow')) {
-                contentDiv.style.height = contentHeight + 'px'
-            } else {
-                contentDiv.style.height = 'auto'
-            }
-
-            packDiv.className = 'pack'
-            packDiv.textContent = '\u21D3'
-            console.log(contentDiv.classList)
-        }
-
+        changePackUnpackStyle(packDiv, contentDiv)
     }
 
     return packDiv
+}
+
+function addPackUnpackAllButton() {
+    let packDiv = document.createElement("button");
+    packDiv.textContent = '\u21D1'
+    packDiv.classList.add("pack")
+
+    packDiv.onclick = function () {
+
+        for (let [index, sectionDiv] of document.querySelectorAll(".timelineSection").entries()) {
+            changePackUnpackStyle(sectionDiv.querySelector('button'), sectionDiv.querySelector(".timelineContent"), packDiv.className)
+        }
+
+        if (packDiv.className === 'pack') {
+            packDiv.textContent = '\u21D3'
+            packDiv.className = 'unpack'
+        } else if (packDiv.className === 'unpack') {
+            packDiv.textContent = '\u21D1'
+            packDiv.className = 'pack'
+        }
+    }
+
+    return packDiv
+}
+
+function changePackUnpackStyle(packDiv, contentDiv, className = packDiv.className) {
+
+    if (className === 'pack') {
+        contentDiv.style.height = 60 + 'px'
+        packDiv.textContent = '\u21D3'
+        packDiv.className = 'unpack'
+
+
+        for (let child of contentDiv.children) {
+            if (child.tagName === 'IMG' ||
+                (child.firstElementChild !== null && (child.firstElementChild.tagName === 'IMG'
+                    || child.firstElementChild.className === 'timelineModal')) || child.tagName === 'BR') {
+                child.style.display = 'none'
+                continue
+            }
+
+            if (child.className === 'timelineModal') continue
+
+            contentDiv.classList.add(child.tagName)
+            contentDiv.classList.add('packedContent')
+
+            child.outerHTML = '<h1>' + child.innerHTML + '</h1>'
+            break
+        }
+
+        if (contentDiv.parentElement.querySelector(".timelineReadMore")) {
+            contentDiv.parentElement.querySelector(".timelineReadMore").style.display = 'none'
+        }
+
+    } else if (className === 'unpack') {
+        if (contentDiv.classList.contains('overflow')) {
+            contentDiv.style.height = contentHeight + 'px'
+        } else {
+            contentDiv.style.height = 'auto'
+        }
+        packDiv.textContent = '\u21D1'
+        packDiv.className = 'pack'
+
+        for (let child of contentDiv.children) {
+
+            if (child.tagName === 'IMG' ||
+                (child.firstElementChild !== null && (child.firstElementChild.tagName === 'IMG'
+                    || child.firstElementChild.className === 'timelineModal')) || child.tagName === 'BR') {
+                child.style.display = 'block'
+                continue
+            }
+
+            if (child.className === 'timelineModal') continue
+
+            contentDiv.classList.remove('packedContent')
+            const tagName = contentDiv.classList.item(contentDiv.classList.length-1)
+            child.outerHTML = '<' +tagName + '>' + child.innerHTML + '</' + tagName + '>'
+            break
+        }
+
+        if (contentDiv.parentElement.querySelector(".timelineReadMore")) {
+            contentDiv.parentElement.querySelector(".timelineReadMore").style.display = 'block'
+        }
+    }
+}
+
+function changePackUnpackStyleFirstTime() {
+    for (let [index, sectionDiv] of document.querySelectorAll(".timelineSection").entries()) {
+        if (data.events[index].packed) {
+            changePackUnpackStyle(sectionDiv.querySelector("button"), sectionDiv.querySelector(".timelineContent"), 'pack')
+        }
+    }
 }
 
 function addModalBoxImg() {
@@ -153,8 +243,7 @@ function addReadMore(content) {
     const readMore = document.createElement('div')
     readMore.classList.add('timelineReadMore')
 
-
-    const modalBoxButton = document.createElement('button')
+    const modalBoxButton = document.createElement('a')
     modalBoxButton.textContent = data.readMore
     modalBoxButton.id = 'event' + content.queueNr
 
