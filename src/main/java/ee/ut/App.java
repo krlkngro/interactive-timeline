@@ -305,7 +305,7 @@ public class App extends Application {
         launch();
     }
 
-    static Data getData() {
+    public static Data getData() {
         return data;
     }
 

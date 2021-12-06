@@ -1,4 +1,4 @@
-package ee.ut;
+package ee.ut.controllers;
 
 import javafx.fxml.FXML;
 
