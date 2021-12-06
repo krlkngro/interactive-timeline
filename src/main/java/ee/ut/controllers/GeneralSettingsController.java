@@ -42,7 +42,7 @@ public class GeneralSettingsController {
             case "line" -> "Joon";
             case "text" -> "Tekst";
             case "dot" -> "Punkt";
-            default -> "appi";
+            default -> "Joon";
         });
         this.readMore.setText(data.getReadMore());
         this.eventSpace.setText(String.valueOf(data.getEventSpace()));
