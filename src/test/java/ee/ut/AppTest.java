@@ -59,6 +59,7 @@ public class AppTest extends ApplicationTest {
         robot.closeCurrentWindow(); //close opened window > if preview wasn't opened, error with next line
         //Save timeline in a file
         robot.clickOn("Fail");
+        robot.moveBy(0, 10);
         robot.clickOn("Salvesta ajajoon samasse kausta");
         Thread.sleep(100);
         //Check saved data
