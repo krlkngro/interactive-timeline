@@ -23,10 +23,8 @@ for (const eventContent of data.events) {
     timelineDiv.appendChild(addContainer(eventContent))
 }
 
-
 //Add pack/unpack all cells button
 timelineDiv.appendChild(addPackUnpackAllButton())
-
 
 //Add generated html to timeline div
 scriptContainer.parentNode.insertBefore(timelineDiv, scriptContainer)
@@ -37,6 +35,12 @@ addModalBoxImg()
 //To get size of element, the element need to be rendered in the Dom.
 //Add button and hide overflowing content.
 handleOverflowingContent()
+
+
+/*document.querySelector("img").addEventListener("load", function ()
+{
+    console.log(document.querySelector("img").clientWidth)
+})*/
 
 
 //--------FUNCTIONS--------
@@ -57,7 +61,7 @@ function addContainer(content) {
 
     section.appendChild(addIcon(content.label))
 
-    section.appendChild(addPackUnpackButton(contentDiv, content.packed))
+    section.appendChild(addPackUnpackButton(contentDiv, content.packed, content.htmlContent))
 
     section.appendChild(contentDiv)
 
@@ -93,9 +97,8 @@ function addIcon(label) {
     return icon
 }
 
-
-function addPackUnpackButton(contentDiv, packed) {
-    const packDiv = document.createElement("button");
+function addPackUnpackButton(contentDiv, packed, htmlContent) {
+    let packDiv = document.createElement("button");
 
     if (packed) {
         packDiv.textContent = '\u21D3'
@@ -106,62 +109,72 @@ function addPackUnpackButton(contentDiv, packed) {
     }
 
     packDiv.onclick = function () {
-        if (packDiv.className === 'pack') {
-            contentDiv.style.height = 45 + 'px'
-            packDiv.className = 'unpack'
-            packDiv.textContent = '\u21D3'
-        } else if (packDiv.className === 'unpack') {
-            if (contentDiv.classList.contains('overflow')) {
-                contentDiv.style.height = contentHeight + 'px'
-            } else {
-                contentDiv.style.height = 'auto'
-            }
-
-            packDiv.className = 'pack'
-            packDiv.textContent = '\u21D1'
-            console.log(contentDiv.classList)
-        }
-
+        packDiv = changePackUnpackStyle(packDiv, contentDiv, htmlContent)
     }
 
     return packDiv
 }
 
 function addPackUnpackAllButton() {
-    const packDiv = document.createElement("button");
+    let packDiv = document.createElement("button");
     packDiv.textContent = '\u21D1'
     packDiv.classList.add("pack")
 
     packDiv.onclick = function () {
 
-        for (let sectionDiv of document.querySelectorAll(".timelineSection")) {
-
-            if (packDiv.className === 'pack') {
-                sectionDiv.querySelector(".timelineContent").style.height = 45 + 'px'
-                sectionDiv.querySelector("button").textContent = '\u21D3'
-                sectionDiv.querySelector("button").className = 'unpack'
-
-            } else if (packDiv.className === 'unpack') {
-                if (sectionDiv.querySelector(".timelineContent").classList.contains('overflow')) {
-                    sectionDiv.querySelector(".timelineContent").style.height = contentHeight + 'px'
-                } else {
-                    sectionDiv.querySelector(".timelineContent").style.height = 'auto'
-                }
-                sectionDiv.querySelector("button").textContent = '\u21D1'
-                sectionDiv.querySelector("button").className = 'pack'
-            }
-
+        for (let [index, sectionDiv] of document.querySelectorAll(".timelineSection").entries()) {
+            changePackUnpackStyle(sectionDiv.querySelector('button'), sectionDiv.querySelector(".timelineContent"), data.events[index].htmlContent, packDiv.className)
         }
 
         if (packDiv.className === 'pack') {
-            packDiv.className = 'unpack'
             packDiv.textContent = '\u21D3'
-        }
-        else {
-            packDiv.className = 'pack'
+            packDiv.className = 'unpack'
+        } else if (packDiv.className === 'unpack') {
             packDiv.textContent = '\u21D1'
+            packDiv.className = 'pack'
+        }
+    }
+
+    return packDiv
+}
+
+function changePackUnpackStyle(packDiv, contentDiv, htmlContent, className = packDiv.className) {
+
+    if (className === 'pack') {
+        contentDiv.style.height = 60 + 'px'
+        packDiv.textContent = '\u21D3'
+        packDiv.className = 'unpack'
+
+
+        for (let child of contentDiv.children) {
+
+            if (child.firstElementChild === null || child.firstElementChild.tagName !== 'img') {
+                const text = contentDiv.firstElementChild
+                text.outerHTML = '<h1>' + text.innerHTML + '</h1>'
+                contentDiv.firstElementChild.classList.add('packedContent')
+                if (contentDiv.parentElement.querySelector(".timelineReadMore")) {
+                    contentDiv.parentElement.querySelector(".timelineReadMore").style.display = 'none'
+                }
+                break
+            }
         }
 
+
+    } else if (className === 'unpack') {
+        if (contentDiv.classList.contains('overflow')) {
+            contentDiv.style.height = contentHeight + 'px'
+        } else {
+            contentDiv.style.height = 'auto'
+        }
+        packDiv.textContent = '\u21D1'
+        packDiv.className = 'pack'
+
+        contentDiv.innerHTML = ""
+        contentDiv.insertAdjacentHTML('beforeend', htmlContent)
+
+        if (contentDiv.parentElement.querySelector(".timelineReadMore")) {
+            contentDiv.parentElement.querySelector(".timelineReadMore").style.display = 'block'
+        }
     }
 
     return packDiv
