@@ -86,7 +86,7 @@ public class EventsController implements Initializable {
                 <head>
                     <style>%s</style>
                 </head>
-                <body contentEditable="true" class="content" style="width: 600px">
+                <body contentEditable="true" class="timelineEditor" style="width: 600px">
                 %s
                 </body>
                 <script>
