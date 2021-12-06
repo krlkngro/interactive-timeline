@@ -54,11 +54,11 @@ public class AppTest extends ApplicationTest {
         robot.write("1");
         robot.clickOn("#saveButton");
         //Open preview
-        robot.clickOn("eelvaade");
-        robot.clickOn("kuva eelvaade");
+        robot.clickOn("Eelvaade");
+        robot.clickOn("Kuva eelvaade");
         robot.closeCurrentWindow(); //close opened window > if preview wasn't opened, error with next line
         //Save timeline in a file
-        robot.clickOn("file");
+        robot.clickOn("Fail");
         robot.clickOn("Salvesta ajajoon");
         Thread.sleep(100);
         //Check saved data

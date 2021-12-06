@@ -1,5 +1,6 @@
-package ee.ut;
+package ee.ut.controllers;
 
+import ee.ut.App;
 import ee.ut.dataObjects.Event;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -86,7 +87,7 @@ public class EventsController implements Initializable {
                 <head>
                     <style>%s</style>
                 </head>
-                <body contentEditable="true" class="content" style="width: 600px">
+                <body contentEditable="true" class="timelineEditor" style="width: 600px">
                 %s
                 </body>
                 <script>
@@ -118,8 +119,8 @@ public class EventsController implements Initializable {
             };
             sleeper.setOnSucceeded(event -> {
                 ComboBox<String> fontSelection = (ComboBox<String>) htmlEditor.lookupAll(".font-menu-button").toArray(new Node[0])[1];
-                fontSelection.setValue("Rubik");
-                fontSelection.setItems(FXCollections.observableArrayList("Rubik"));
+                fontSelection.setValue("Arial");
+                fontSelection.setItems(FXCollections.observableArrayList("Arial"));
                 fontSelection.setVisible(false);
                 fontSelection.setManaged(false);
                 Node foreground = htmlEditor.lookup(".html-editor-foreground");

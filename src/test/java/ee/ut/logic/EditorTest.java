@@ -75,7 +75,7 @@ public class EditorTest {
     @Test
     public void savingExistingEventSavesCorrectData() {
         Event event = new Event(false, 99, "TestTest", "TestTestHtml", null, null);
-        Data data = new Data(Type.TEXT, 200, new ArrayList<>(List.of(event)));
+        Data data = new Data(Type.TEXT, 200,"Read more", new ArrayList<>(List.of(event)));
         Editor.saveEvent(
                 data,
                 event,
@@ -110,7 +110,8 @@ public class EditorTest {
                 data,
                 "Punkt",
                 "300",
-                true
+                true,
+                "Read more"
         );
         assertEquals(Type.DOT, data.getLabelType());
     }
@@ -123,16 +124,31 @@ public class EditorTest {
                 data,
                 "Punkt",
                 "300",
-                true
+                true,
+                "Read more"
         );
         assertEquals(300, data.getEventSpace());
+    }
+
+    @Test
+    public void savingSettingsSavesCorrectReadMore() {
+        Data data = new Data();
+        assertEquals(200, data.getEventSpace());
+        Editor.saveSettings(
+                data,
+                "Punkt",
+                "300",
+                true,
+                "Read more"
+        );
+        assertEquals("Read more", data.getReadMore());
     }
 
     @Test
     public void enablingEventsPackedChangesPackedValueForExistingEvents() {
         Event event = new Event();
         Event event1 = new Event();
-        Data data = new Data(Type.TEXT, 200, Arrays.asList(event, event1));
+        Data data = new Data(Type.TEXT, 200,"Read more", Arrays.asList(event, event1));
         for (Event e : data.getEvents()) {
             assertFalse(e.getPacked());
         }
@@ -140,7 +156,8 @@ public class EditorTest {
                 data,
                 "Punkt",
                 "300",
-                true
+                true,
+                "Read more"
         );
         for (Event e : data.getEvents()) {
             assertTrue(e.getPacked());
@@ -157,7 +174,8 @@ public class EditorTest {
                 data,
                 "Joon",
                 "200",
-                false
+                false,
+                "Read more"
         );
         for (Event e : data.getEvents()) {
             assertFalse(e.getPacked());
@@ -171,7 +189,8 @@ public class EditorTest {
                 data,
                 "Joon",
                 "200",
-                false
+                false,
+                "Read more"
         );
         Event event = new Event();
         Editor.saveEvent(
@@ -189,7 +208,8 @@ public class EditorTest {
                 data,
                 "Punkt",
                 "300",
-                true
+                true,
+                "Read more"
         );
         Event event1 = new Event();
         Editor.saveEvent(

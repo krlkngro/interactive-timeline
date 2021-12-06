@@ -4,9 +4,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import java.lang.String?>
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ee.ut.GeneralSettingsController">
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ee.ut.controllers.GeneralSettingsController">
     <children>
-        <VBox alignment="TOP_LEFT" spacing="20.0"  style="-fx-padding: 20 5 250 20;">
+        <VBox alignment="TOP_LEFT" spacing="20.0"  style="-fx-padding: 0 5 75 20;">
             <HBox alignment="TOP_LEFT" spacing="10.0">
                 <Label text="Sündmuse märgis ajajoonel:"/>
                 <ComboBox fx:id="labelType" value="Joon">
@@ -22,6 +22,10 @@
             <HBox alignment="TOP_LEFT" spacing="10.0">
                 <Label text="Sündmuste vahe ajajoonel:"/>
                 <TextField text="200" fx:id="eventSpace"/>
+            </HBox>
+            <HBox alignment="TOP_LEFT" spacing="10.0">
+                <Label text="'Loe rohkem':"/>
+                <TextField text="Loe rohkem" fx:id="readMore"/>
             </HBox>
             <CheckBox fx:id="eventsPacked" text="Sündmused kokku pakitud" />
         </VBox>
