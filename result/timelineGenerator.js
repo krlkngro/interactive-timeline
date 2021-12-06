@@ -61,7 +61,7 @@ function addContainer(content) {
 
     section.appendChild(addIcon(content.label))
 
-    section.appendChild(addPackUnpackButton(contentDiv, content.packed, content.htmlContent))
+    section.appendChild(addPackUnpackButton(contentDiv, content.packed))
 
     section.appendChild(contentDiv)
 
@@ -97,7 +97,7 @@ function addIcon(label) {
     return icon
 }
 
-function addPackUnpackButton(contentDiv, packed, htmlContent) {
+function addPackUnpackButton(contentDiv, packed) {
     let packDiv = document.createElement("button");
 
     if (packed) {
@@ -109,7 +109,7 @@ function addPackUnpackButton(contentDiv, packed, htmlContent) {
     }
 
     packDiv.onclick = function () {
-        packDiv = changePackUnpackStyle(packDiv, contentDiv, htmlContent)
+        changePackUnpackStyle(packDiv, contentDiv)
     }
 
     return packDiv
@@ -122,8 +122,9 @@ function addPackUnpackAllButton() {
 
     packDiv.onclick = function () {
 
-        for (let [index, sectionDiv] of document.querySelectorAll(".timelineSection").entries()) {
-            changePackUnpackStyle(sectionDiv.querySelector('button'), sectionDiv.querySelector(".timelineContent"), data.events[index].htmlContent, packDiv.className)
+        for (let sectionDiv of document.querySelectorAll(".timelineSection")) {
+            console.log(sectionDiv)
+            changePackUnpackStyle(sectionDiv.querySelector('button'), sectionDiv.querySelector(".timelineContent"), packDiv.className)
         }
 
         if (packDiv.className === 'pack') {
@@ -138,7 +139,7 @@ function addPackUnpackAllButton() {
     return packDiv
 }
 
-function changePackUnpackStyle(packDiv, contentDiv, htmlContent, className = packDiv.className) {
+function changePackUnpackStyle(packDiv, contentDiv, className = packDiv.className) {
 
     if (className === 'pack') {
         contentDiv.style.height = 60 + 'px'
@@ -147,18 +148,23 @@ function changePackUnpackStyle(packDiv, contentDiv, htmlContent, className = pac
 
 
         for (let child of contentDiv.children) {
-
-            if (child.firstElementChild === null || child.firstElementChild.tagName !== 'img') {
-                const text = contentDiv.firstElementChild
-                text.outerHTML = '<h1>' + text.innerHTML + '</h1>'
-                contentDiv.firstElementChild.classList.add('packedContent')
-                if (contentDiv.parentElement.querySelector(".timelineReadMore")) {
-                    contentDiv.parentElement.querySelector(".timelineReadMore").style.display = 'none'
-                }
-                break
+            console.log(child.tagName)
+            if (child.className === 'timelineModal' || child.tagName === 'IMG' ||
+                (child.firstElementChild !== null && (child.firstElementChild.tagName === 'IMG'
+                    || child.firstElementChild.className === 'timelineModal')) || child.tagName === 'BR') {
+                child.style.display = 'none'
+                continue
             }
+
+            contentDiv.classList.add(child.tagName)
+            contentDiv.classList.add('packedContent')
+            child.outerHTML = '<h1>' + child.innerHTML + '</h1>'
+            break
         }
 
+        if (contentDiv.parentElement.querySelector(".timelineReadMore")) {
+            contentDiv.parentElement.querySelector(".timelineReadMore").style.display = 'none'
+        }
 
     } else if (className === 'unpack') {
         if (contentDiv.classList.contains('overflow')) {
@@ -169,15 +175,26 @@ function changePackUnpackStyle(packDiv, contentDiv, htmlContent, className = pac
         packDiv.textContent = '\u21D1'
         packDiv.className = 'pack'
 
-        contentDiv.innerHTML = ""
-        contentDiv.insertAdjacentHTML('beforeend', htmlContent)
+        for (let child of contentDiv.children) {
+
+            if (child.className === 'timelineModal' || child.tagName === 'IMG' ||
+                (child.firstElementChild !== null && (child.firstElementChild.tagName === 'IMG'
+                    || child.firstElementChild.className === 'timelineModal')) || child.tagName === 'BR') {
+                child.style.display = 'block'
+                continue
+            }
+
+            console.log(contentDiv.classList)
+            contentDiv.classList.remove('packedContent')
+            const tagName = contentDiv.classList.item(-1)
+            child.outerHTML = '<' +tagName + '>' + child.innerHTML + '</' + tagName + '>'
+            break
+        }
 
         if (contentDiv.parentElement.querySelector(".timelineReadMore")) {
             contentDiv.parentElement.querySelector(".timelineReadMore").style.display = 'block'
         }
     }
-
-    return packDiv
 }
 
 function addModalBoxImg() {
