@@ -13,6 +13,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -129,8 +130,40 @@ public class App extends Application {
         Menu fileMenu = new Menu("Fail");
         MenuItem saveFile = new MenuItem("Salvesta ajajoon");
         saveFile.setOnAction(event -> {
-            Path resultFolder = Path.of(System.getProperty("user.dir"));
+
+            DirectoryChooser directoryChooser = new DirectoryChooser();
+            directoryChooser.setTitle("Vali kaust kuhu ajajoon salvestada");
+            directoryChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+            File folder = directoryChooser.showDialog(new Stage());
+            Path resultFolder = Path.of(String.valueOf(folder));
             Path file = resultFolder.resolve("data.js");
+            while (Files.exists(file)) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Kinnita ülekirjutamine");
+                alert.setHeaderText("Kinnita ülekirjutamine");
+                alert.setContentText("Oled ülekirjutamas olemasolevat ajajoont. Kas soovid jätkata?");
+
+                ButtonType buttonTypeSave = new ButtonType("Kirjuta üle");
+                ButtonType buttonTypePickNew = new ButtonType("Vali teine kaust");
+                ButtonType buttonTypeCancel = new ButtonType("Katkesta");
+
+                alert.getButtonTypes().setAll(buttonTypeSave, buttonTypePickNew, buttonTypeCancel);
+
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == buttonTypeSave) {
+                    break;
+                } else if (result.get() == buttonTypeCancel) {
+                    return;
+                } else if (result.get() == buttonTypePickNew) {
+                    directoryChooser = new DirectoryChooser();
+                    directoryChooser.setTitle("Vali kaust kuhu ajajoon salvestada");
+                    directoryChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+                    folder = directoryChooser.showDialog(new Stage());
+                    resultFolder = Path.of(String.valueOf(folder));
+                    file = resultFolder.resolve("data.js");
+                }
+            }
+
             Path imageFolder = resultFolder.resolve("images");
             try {
                 if (!imageFolder.toFile().exists()) {
@@ -187,6 +220,16 @@ public class App extends Application {
                     }
                 });
                 Files.writeString(file, "const data = " + new ObjectMapper().writeValueAsString(data));
+                Path currentFolder = Path.of(System.getProperty("user.dir"));
+                if (!currentFolder.equals(resultFolder)) {
+                    Files.copy(currentFolder.resolve("style.css"), resultFolder.resolve("style.css"), StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(currentFolder.resolve("timeline.html"), resultFolder.resolve("timeline.html"), StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(currentFolder.resolve("timelineGenerator.js"), resultFolder.resolve("timelineGenerator.js"), StandardCopyOption.REPLACE_EXISTING);
+
+                    //Set working folder to new save folder
+                    System.setProperty("user.dir", currentFolder.toAbsolutePath().toString());
+                }
+
                 scene.setRoot(loadFXML("primary"));
                 data = null;
             } catch (IOException e) {
@@ -240,8 +283,8 @@ public class App extends Application {
                 alert.setHeaderText("Kinnita sulgemine");
                 alert.setContentText("Oled sulgemas programmi. Kas soovid jätkata?");
 
-                ButtonType buttonTypeSave = new ButtonType("Salvesta ja jätka");
-                ButtonType buttonTypeClose = new ButtonType("Jätka");
+                ButtonType buttonTypeSave = new ButtonType("Salvesta ja sulge programm");
+                ButtonType buttonTypeClose = new ButtonType("Sulge programm");
                 ButtonType buttonTypeCancel = new ButtonType("Katkesta");
 
                 alert.getButtonTypes().setAll(buttonTypeSave, buttonTypeClose, buttonTypeCancel);
