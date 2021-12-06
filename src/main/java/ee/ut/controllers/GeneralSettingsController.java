@@ -1,5 +1,6 @@
-package ee.ut;
+package ee.ut.controllers;
 
+import ee.ut.App;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
