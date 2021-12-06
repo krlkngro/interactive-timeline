@@ -126,7 +126,6 @@ function addPackUnpackAllButton() {
     packDiv.onclick = function () {
 
         for (let [index, sectionDiv] of document.querySelectorAll(".timelineSection").entries()) {
-            console.log(sectionDiv)
             changePackUnpackStyle(sectionDiv.querySelector('button'), sectionDiv.querySelector(".timelineContent"), packDiv.className)
         }
 
@@ -151,16 +150,18 @@ function changePackUnpackStyle(packDiv, contentDiv, className = packDiv.classNam
 
 
         for (let child of contentDiv.children) {
-            console.log(child.tagName)
-            if (child.className === 'timelineModal' || child.tagName === 'IMG' ||
+            if (child.tagName === 'IMG' ||
                 (child.firstElementChild !== null && (child.firstElementChild.tagName === 'IMG'
                     || child.firstElementChild.className === 'timelineModal')) || child.tagName === 'BR') {
                 child.style.display = 'none'
                 continue
             }
 
+            if (child.className === 'timelineModal') continue
+
             contentDiv.classList.add(child.tagName)
             contentDiv.classList.add('packedContent')
+
             child.outerHTML = '<h1>' + child.innerHTML + '</h1>'
             break
         }
@@ -180,16 +181,17 @@ function changePackUnpackStyle(packDiv, contentDiv, className = packDiv.classNam
 
         for (let child of contentDiv.children) {
 
-            if (child.className === 'timelineModal' || child.tagName === 'IMG' ||
+            if (child.tagName === 'IMG' ||
                 (child.firstElementChild !== null && (child.firstElementChild.tagName === 'IMG'
                     || child.firstElementChild.className === 'timelineModal')) || child.tagName === 'BR') {
                 child.style.display = 'block'
                 continue
             }
 
-            console.log(contentDiv.classList)
+            if (child.className === 'timelineModal') continue
+
             contentDiv.classList.remove('packedContent')
-            const tagName = contentDiv.classList.item(-1)
+            const tagName = contentDiv.classList.item(contentDiv.classList.length-1)
             child.outerHTML = '<' +tagName + '>' + child.innerHTML + '</' + tagName + '>'
             break
         }
