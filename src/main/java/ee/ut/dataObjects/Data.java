@@ -6,18 +6,21 @@ import java.util.List;
 public class Data {
     private Type labelType;
     private int eventSpace; // space between two events
+    private String readMore;
     private List<Event> events;
 
     public Data() {
         // todo discuss reasonable default values
         this.labelType = Type.LINE;
         this.eventSpace = 200;
+        this.readMore = "Loe rohkem";
         this.events = new ArrayList<>();
     }
 
-    public Data(Type labelType, int eventSpace, List<Event> events) {
+    public Data(Type labelType, int eventSpace, String readMore, List<Event> events) {
         this.labelType = labelType;
         this.eventSpace = eventSpace;
+        this.readMore = readMore;
         this.events = events;
     }
 
@@ -48,6 +51,14 @@ public class Data {
 
     public void setEventSpace(int eventSpace) {
         this.eventSpace = eventSpace;
+    }
+
+    public String getReadMore() {
+        return readMore;
+    }
+
+    public void setReadMore(String readMore) {
+        this.readMore = readMore;
     }
 
     public List<Event> getEvents() {

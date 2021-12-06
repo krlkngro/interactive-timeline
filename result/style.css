@@ -4,25 +4,37 @@
     position : absolute;
     height: 100%;
     width: 5px;
-    background: #517DB9;
     left: 50%;
     top: 20px;
     transform: translateX(-50%);
+    background: #2C5697;
+    z-index: -1;
+}
+
+h1, h2, h3,
+h4, h5, h6 {
+    margin: 16px 0;
+}
+
+* {
+    font-size: 16px;
+    font-family: Arial, sans-serif;
 }
 
 .timeline {
     display: grid;
-    grid-gap: 50px;
+    grid-gap: 75px;
     grid-column-gap: 110px;
-    background-color: white;
+    background-color: transparent;
     grid-template-columns: 1fr 1fr;
     grid-auto-rows: 300px;
     height: 100%;
     width: 85%;
     margin: auto;
     position: relative;
-    color: white;
+    color: #1B365D;
     font-size: 20px;
+    font-family: Arial, sans-serif;
 }
 
 .timeline .empty {
@@ -32,147 +44,242 @@
 .timelineEvent {
     grid-row: span 2;
     width: 100%;
-    border-radius: 5px;
-    background-color: #2C5697;
+    background-color: transparent;
     position: relative;
     display: flex;
+    border-radius: 5px;
 }
 
 
 .timelineEvent .timelineSection::before {
     position: absolute;
     content: "";
-    height: 15px;
-    width: 15px;
-    background: #2C5697 ;
-    z-index: 1;
+    height: 20px;
+    width: 20px;
+    background: #2C5697;
+    z-index: -1;
     top: 25px;
     transform: rotate(45deg);
+    border:1px solid #2C5697;
+    outline:1px solid white;
+    outline-offset:-5px;
 }
 
 
 .timelineEventBox {
     width: 100%;
-    padding: 20px 20px 15px;
-    position: relative;
+    /*border: 5px solid #ce43eb;*/
+    height: 100%;
+    background-color: transparent;
 }
 
 .timelineSection{
-    height: 100%;
     position: relative;
     width: 100%;
+    background-color: white;
+    border-radius: 5px;
+    border:1px solid #2C5697;
+    outline:1px solid #2C5697;
+    outline-offset:-5px;
 }
 
 .timelineEvent:nth-child(even) .timelineSection::before{
-    left: -25px;
+    left: -10px;
 }
 
 .timelineEvent:nth-child(odd) .timelineSection::before{
-    right: -25px;
+    right: -10px;
 }
 
-.timelineEvent .icon {
+.timelineEvent .dotIcon,
+.timelineEvent .textIcon,
+.timelineEvent .lineIcon{
     position: absolute;
     z-index: 1;
-    background:  #517DB9;
-    height: 70px;
-    width: 70px;
+    background:  white;
+
+}
+
+.timelineEvent .lineIcon {
+    width: 30px;
+    height: 10px;
+    background: #2C5697;
+}
+
+.timelineEvent .dotIcon {
+    height: 15px;
+    width: 15px;
+    background: #2C5697;
+    border:3px solid white;
+    outline-offset:-5px;
     border-radius: 30%;
+}
+
+.timelineEvent .textIcon {
+    width: 70px;
     font-size: 15px;
-    box-shadow: 0 0 0 4px #2C5697, inset 0 2px 0 rgba(0,0,0,0.08), 0 3px 0 4px rgba(0,0,0,0.05);
+    position: absolute;
+    background-color: white;
+    height: fit-content;
+    top: 6px;
 }
 
-.icon p {
+.textIcon p {
     text-align: center;
-    position: relative;
-    top: 30%;
-    transform: translateY(-50%);
-    padding: 3px;
 }
 
-.timelineEvent:nth-child(even) .icon {
-    left: -110px;
+.timelineEvent .lineIcon {
+    top: 30px;
 }
 
-.timelineEvent:nth-child(odd) .icon {
-    right: -110px;
+.timelineEvent:nth-child(even) .lineIcon {
+    left: -70px;
+}
+
+.timelineEvent:nth-child(odd) .lineIcon {
+    right: -70px;
+}
+
+.timelineEvent .dotIcon {
+    top: 25px;
+}
+
+.timelineEvent:nth-child(even) .dotIcon {
+    left: -65px;
+}
+
+.timelineEvent:nth-child(odd) .dotIcon {
+    right: -65px;
+}
+
+.timelineEvent:nth-child(even) .textIcon{
+    left: -90px;
+}
+
+.timelineEvent:nth-child(odd) .textIcon {
+    right: -90px;
 }
 
 .timelineContent {
     position: relative;
-    overflow: hidden;
     max-width: 100%;
-    height: 85%;
+    padding: 20px;
+    overflow:hidden;
 }
 
 .timelineReadMore {
     position:relative;
-    bottom:0;
-    width:100%;
-    padding-top: 10px;
+    padding: 20px 0 20px 20px;
+    height: 100%;
+}
+
+
+.timelineReadMore a, button{
+    font-size: 15px;
+    width: auto;
+    height: 40px;
+    padding-bottom: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    background: white;
+}
+
+.timelineReadMore a:hover, button:hover{
+    text-decoration: underline;
+}
+
+.timelineModalContent .closeX{
+    top: 0;
+    font-size: 25px;
+    font-weight: normal;
+    position: sticky;
+    background-color: transparent;
+    float: right;
+    right: -20px;
 }
 
 .timelineContent  img,
 .timelineContent  video, .timelineContent  iframe,
 .timelineModalContent img,
-.timelineModalContent  video, .timelineModalContent  iframe{
+.timelineModalContent  video, .timelineModalContent  iframe,
+.timelineEditor img, .timelineEditor video, .timelineEditor iframe {
     max-width: 100%;
-    height: auto;
     object-fit: contain;
     display: block;
     margin-left: auto;
     margin-right: auto;
+    cursor: pointer;
 }
 
 /*Modal css is took from https://www.w3schools.com/howto/howto_css_modals.asp*/
 .timelineModal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 2; /* Sit on top */
+    display: none;
+    position: fixed;
+    z-index: 5;
     left: 0;
     top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
+    width: 100%;
+    height: 100%;
     background-color: rgb(0,0,0); /* Fallback color */
     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
     border-radius: 5px;
-    scroll-padding: 20px;
+}
+
+.timelineModal button {
+    float: right;
+
 }
 
 .timelineModalContent {
     position: relative;
-    background-color: #2C5697;
+    background-color: white;
+    border-radius: 5px;
+    border:1px solid #2C5697;
+    outline:1px solid #2C5697;
+    outline-offset:-5px;
     margin: auto;
-    padding: 20px;
-    width: 65%;
+    padding: 50px 50px 20px;
+    width: 55%;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
     -webkit-animation-name: animatetop;
     -webkit-animation-duration: 0.4s;
     animation-name: animatetop;
     animation-duration: 0.4s;
-    border-radius: 5px;
-    height: 80%;
-    overflow-y: scroll;
+    overflow-y: auto;
     top:50%;
+    height: auto;
+    max-height: 80%;
     transform: translateY(-50%);
-    scroll-padding: 20px;
 }
 
+.pack, .unpack {
+    color: #1B365D;
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    z-index: 2;
+    cursor: pointer;
+    font-weight: bold;
+    border: none;
+    background: transparent;
+    font-size: 25px;
+}
 
 @media only screen and (max-width: 640px) {
     .timeline {
+        top: 20px;
+        display: flex;
+        flex-direction: column;
         margin-left: 20px;
         padding-left: 50px;
         left: 20px;
         width: 80%;
-        display: grid;
-        grid-template-columns: 100%;
-        grid-column-gap: 0;
-        grid-row-gap: 30px;
-
     }
+
     .timelineEventBox {
-        padding: 10px;
+        width: 100%;
+        height: 100%;
+        border-radius: 5px;
     }
 
 
@@ -184,17 +291,23 @@
         transform: translateX(-50%);
     }
 
-    .timelineEvent:nth-child(even) .icon {
-        left: -100px;
+    .timelineEvent .textIcon {
+        left: -90px;
     }
 
-    .timelineEvent:nth-child(odd) .icon {
-        left: -100px;
+    .timelineEvent .dotIcon {
+        left: -65px;
     }
 
-    .timelineEvent:nth-child(even) .timelineSection::before,
-    .timelineEvent:nth-child(odd) .timelineSection::before{
-        left: -18px;
+    .timelineEvent .lineIcon {
+        left: -70px;
     }
+
+
+    .timelineSection::before{
+        left: -10px;
+        z-index: 0;
+    }
+
 
 }

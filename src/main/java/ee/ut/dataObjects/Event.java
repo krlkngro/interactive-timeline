@@ -24,7 +24,7 @@ public class Event {
 
     public Event() {
         //todo discuss reasonable default values, figure out a way to set defaults based on general settings
-        this.htmlContent = "<p style=\"font-family: 'Rubik';\">Insert text here</p>";
+        this.htmlContent = "<p style=\"font-family: 'Arial';\">Insert text here</p>";
         this.queueNr = 1;
         this.label = "";
         this.packed = false;
