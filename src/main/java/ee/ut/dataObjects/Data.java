@@ -31,11 +31,14 @@ public class Data {
     public void setLabelType(String labelType) {
         switch(labelType){
             case "Tekst":
+            case "TEXT":
                 this.labelType = Type.TEXT;
                 break;
             case "Joon":
+            case "LINE":
                 this.labelType = Type.LINE;
                 break;
+            case "DOT":
             case "Punkt":
                 this.labelType = Type.DOT;
                 break;
@@ -72,5 +75,15 @@ public class Data {
     //Add a single event to events list
     public void addEvent(int index, Event event){
         events.add(index, event);
+    }
+
+    @Override
+    public String toString() {
+        return "Data{" +
+                "labelType=" + labelType +
+                ", eventSpace=" + eventSpace +
+                ", readMore='" + readMore + '\'' +
+                ", events=" + events +
+                '}';
     }
 }
