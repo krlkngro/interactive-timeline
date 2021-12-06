@@ -129,7 +129,7 @@ public class App extends Application {
         MenuBar menuBar = new MenuBar();
         Menu fileMenu = new Menu("Fail");
         MenuItem saveFile = new MenuItem("Salvesta ajajoon");
-        MenuItem saveFiletoNewDestination = new MenuItem("Salvesta ajajoon teise kausta");
+        MenuItem saveFiletoNewDestination = new MenuItem("Salvesta uude kausta");
         saveFile.setOnAction(event -> {
 
             Path resultFolder = Path.of(System.getProperty("user.dir"));
