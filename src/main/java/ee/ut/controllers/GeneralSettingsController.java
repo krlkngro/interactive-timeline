@@ -1,6 +1,7 @@
 package ee.ut.controllers;
 
 import ee.ut.App;
+import ee.ut.dataObjects.Data;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -30,14 +31,15 @@ public class GeneralSettingsController {
 
     public void initialize() {
         //Allow only numbers in eventSpace textfield
-        eventSpace.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (!newValue.matches("\\d{0,5}")) {
-                    eventSpace.setText(oldValue);
-                }
+        eventSpace.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d{0,5}")) {
+                eventSpace.setText(oldValue);
             }
         });
+        Data data = App.getData();
+        this.labelType.setValue(data.getLabelType().toString());
+        this.readMore.setText(data.getReadMore());
+        this.eventSpace.setText(String.valueOf(data.getEventSpace()));
     }
 
     public void save(ActionEvent actionEvent) {

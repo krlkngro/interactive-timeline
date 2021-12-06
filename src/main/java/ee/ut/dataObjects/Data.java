@@ -73,4 +73,14 @@ public class Data {
     public void addEvent(int index, Event event){
         events.add(index, event);
     }
+
+    @Override
+    public String toString() {
+        return "Data{" +
+                "labelType=" + labelType +
+                ", eventSpace=" + eventSpace +
+                ", readMore='" + readMore + '\'' +
+                ", events=" + events +
+                '}';
+    }
 }

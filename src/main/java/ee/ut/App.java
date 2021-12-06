@@ -118,6 +118,7 @@ public class App extends Application {
         settingsTab.setClosable(false);
         settingsTab.setContent(loadFXML("settings"));
 
+
         eventsTab = new Tab();
         eventsTab.setText("Sündmused");
         eventsTab.setClosable(false);
