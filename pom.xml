@@ -92,6 +92,9 @@
                         <option>-Dfile.encoding=UTF-8</option>
                     </javaOptions>
                     <winDirChooser>true</winDirChooser>
+                    <winMenu>true</winMenu>
+                    <winShortcut>true</winShortcut>
+                    <additionalOptions>--win-shortcut-prompt</additionalOptions>
                 </configuration>
             </plugin>
         </plugins>
