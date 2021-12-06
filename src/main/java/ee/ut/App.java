@@ -128,30 +128,12 @@ public class App extends Application {
         TabPane tabPane = new TabPane(settingsTab, eventsTab);
         MenuBar menuBar = new MenuBar();
         Menu fileMenu = new Menu("Fail");
-        MenuItem saveFile = new MenuItem("Salvesta ajajoon");
+        MenuItem saveFile = new MenuItem("Salvesta ajajoon samasse kausta");
         MenuItem saveFiletoNewDestination = new MenuItem("Salvesta uude kausta");
         saveFile.setOnAction(event -> {
 
             Path resultFolder = Path.of(System.getProperty("user.dir"));
             Path file = resultFolder.resolve("data.js");
-            while (Files.exists(file)) {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Kinnita ülekirjutamine");
-                alert.setHeaderText("Kinnita ülekirjutamine");
-                alert.setContentText("Oled ülekirjutamas olemasolevat ajajoont. Kas soovid jätkata?");
-
-                ButtonType buttonTypeSave = new ButtonType("Asenda fail");
-                ButtonType buttonTypeCancel = new ButtonType("Katkesta");
-
-                alert.getButtonTypes().setAll(buttonTypeSave, buttonTypeCancel);
-
-                Optional<ButtonType> result = alert.showAndWait();
-                if (result.get() == buttonTypeSave) {
-                    break;
-                } else if (result.get() == buttonTypeCancel) {
-                    return;
-                }
-            }
             Path imageFolder = resultFolder.resolve("images");
             try {
                 if (!imageFolder.toFile().exists()) {
