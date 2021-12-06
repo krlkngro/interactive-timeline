@@ -59,7 +59,8 @@ public class AppTest extends ApplicationTest {
         robot.closeCurrentWindow(); //close opened window > if preview wasn't opened, error with next line
         //Save timeline in a file
         robot.clickOn("Fail");
-        robot.clickOn("Salvesta ajajoon");
+        robot.moveBy(0, 10);
+        robot.clickOn("Salvesta ajajoon samasse kausta");
         Thread.sleep(100);
         //Check saved data
         String savedData = Files.readString(Path.of(System.getProperty("user.dir") + "\\data.js"));
@@ -73,7 +74,7 @@ public class AppTest extends ApplicationTest {
 
     @Override
     public void stop(){
-        deleteDirectory(Paths.get(System.getProperty("user.dir")).toFile());
+        //deleteDirectory(Paths.get(System.getProperty("user.dir")).toFile());
         System.setProperty("user.dir", System.getProperty("user.dir").replace("/src/test",""));
        
     }

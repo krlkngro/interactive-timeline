@@ -13,6 +13,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -127,8 +128,10 @@ public class App extends Application {
         TabPane tabPane = new TabPane(settingsTab, eventsTab);
         MenuBar menuBar = new MenuBar();
         Menu fileMenu = new Menu("Fail");
-        MenuItem saveFile = new MenuItem("Salvesta ajajoon");
+        MenuItem saveFile = new MenuItem("Salvesta ajajoon samasse kausta");
+        MenuItem saveFiletoNewDestination = new MenuItem("Salvesta uude kausta");
         saveFile.setOnAction(event -> {
+
             Path resultFolder = Path.of(System.getProperty("user.dir"));
             Path file = resultFolder.resolve("data.js");
             Path imageFolder = resultFolder.resolve("images");
@@ -187,6 +190,7 @@ public class App extends Application {
                     }
                 });
                 Files.writeString(file, "const data = " + new ObjectMapper().writeValueAsString(data));
+
                 scene.setRoot(loadFXML("primary"));
                 data = null;
             } catch (IOException e) {
@@ -204,6 +208,123 @@ public class App extends Application {
             alert.show();
         });
 
+        saveFiletoNewDestination.setOnAction(event -> {
+
+            DirectoryChooser directoryChooser = new DirectoryChooser();
+            directoryChooser.setTitle("Vali kaust kuhu ajajoon salvestada");
+            directoryChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+            File folder = directoryChooser.showDialog(new Stage());
+            Path resultFolder = Path.of(String.valueOf(folder));
+            Path file = resultFolder.resolve("data.js");
+            while (Files.exists(file)) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Kinnita ülekirjutamine");
+                alert.setHeaderText("Kinnita ülekirjutamine");
+                alert.setContentText("Oled ülekirjutamas olemasolevat ajajoont. Kas soovid jätkata?");
+
+                ButtonType buttonTypeSave = new ButtonType("Kirjuta üle");
+                ButtonType buttonTypePickNew = new ButtonType("Vali teine kaust");
+                ButtonType buttonTypeCancel = new ButtonType("Katkesta");
+
+                alert.getButtonTypes().setAll(buttonTypeSave, buttonTypePickNew, buttonTypeCancel);
+
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == buttonTypeSave) {
+                    break;
+                } else if (result.get() == buttonTypeCancel) {
+                    return;
+                } else if (result.get() == buttonTypePickNew) {
+                    directoryChooser = new DirectoryChooser();
+                    directoryChooser.setTitle("Vali kaust kuhu ajajoon salvestada");
+                    directoryChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+                    folder = directoryChooser.showDialog(new Stage());
+                    resultFolder = Path.of(String.valueOf(folder));
+                    file = resultFolder.resolve("data.js");
+                }
+            }
+
+            Path imageFolder = resultFolder.resolve("images");
+            try {
+                if (!imageFolder.toFile().exists()) {
+                    Files.createDirectories(imageFolder);
+                }
+                if (data.getEvents().stream().anyMatch(e -> e.getImagePaths().size() > 0)) {
+                    data.getEvents().forEach(e -> {
+                        try {
+                            Path eventImageFolder = imageFolder.resolve(e.getUuid().toString());
+                            if (!eventImageFolder.toFile().exists()) {
+                                Files.createDirectories(eventImageFolder);
+                            }
+                            AtomicInteger largestNumber = new AtomicInteger(
+                                    Arrays.stream(eventImageFolder.toFile().listFiles())
+                                            .map(imageFile -> Integer.parseInt(imageFile.getName().split("\\.")[0]))
+                                            .max(Integer::compareTo)
+                                            .orElse(0)
+                            );
+                            e.getImagePaths().forEach(path -> {
+                                try {
+                                    Path imageFilePath = Path.of(path);
+                                    Path savedImage = imageFilePath;
+                                    if (eventImageFolder.toUri().relativize(path).equals(path) && e.getHtmlContent().contains("src=\"" + path + "\"")) {
+                                        String fileName = imageFilePath.getFileName().toString();
+                                        savedImage = eventImageFolder.resolve(largestNumber.incrementAndGet() + (fileName.contains(".") ? fileName.substring(fileName.lastIndexOf(".")) : ""));
+                                        Files.copy(imageFilePath, savedImage, StandardCopyOption.REPLACE_EXISTING);
+                                    }
+                                    e.setHtmlContent(e.getHtmlContent().replaceFirst(path.toString(), "images/" + e.getUuid().toString() + "/" + savedImage.getFileName()));
+                                } catch (IOException ex) {
+                                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                    alert.setTitle("Teade");
+                                    alert.setHeaderText("Teade");
+                                    alert.setContentText("Piltide salvestamine ebaõnnestus.");
+                                    alert.show();
+                                    ex.printStackTrace();
+                                }
+                            });
+                            Arrays.stream(eventImageFolder.toFile().listFiles())
+                                    .filter(imageFile -> !e.getHtmlContent().contains("src=\"images/" + e.getUuid().toString() + "/" + imageFile.getName() + "\""))
+                                    .forEach(File::delete);
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    });
+
+                }
+                Arrays.stream(imageFolder.toFile().listFiles()).filter(
+                        f -> data.getEvents().stream().noneMatch(e -> e.getUuid().toString().equals(f.getName()))
+                ).forEach(f -> {
+                    if (f.isDirectory()) {
+                        deleteDir(f);
+                    } else {
+                        f.delete();
+                    }
+                });
+                Files.writeString(file, "const data = " + new ObjectMapper().writeValueAsString(data));
+                Path currentFolder = Path.of(System.getProperty("user.dir"));
+                if (!currentFolder.equals(resultFolder)) {
+                    Files.copy(currentFolder.resolve("style.css"), resultFolder.resolve("style.css"), StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(currentFolder.resolve("timeline.html"), resultFolder.resolve("timeline.html"), StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(currentFolder.resolve("timelineGenerator.js"), resultFolder.resolve("timelineGenerator.js"), StandardCopyOption.REPLACE_EXISTING);
+
+                    //Set working folder to new save folder
+                    System.setProperty("user.dir", currentFolder.toAbsolutePath().toString());
+                }
+
+                scene.setRoot(loadFXML("primary"));
+                data = null;
+            } catch (IOException e) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Teade");
+                alert.setHeaderText("Teade");
+                alert.setContentText("Piltide salvestamine ebaõnnestus.");
+                alert.show();
+                e.printStackTrace();
+            }
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Teade");
+            alert.setHeaderText("Teade");
+            alert.setContentText("Ajajoon salvestatud.");
+            alert.show();
+        });
 
         Menu previewMenu = new Menu("Eelvaade");
         MenuItem showPreview = new MenuItem("Kuva eelvaade");
@@ -240,8 +361,8 @@ public class App extends Application {
                 alert.setHeaderText("Kinnita sulgemine");
                 alert.setContentText("Oled sulgemas programmi. Kas soovid jätkata?");
 
-                ButtonType buttonTypeSave = new ButtonType("Salvesta ja jätka");
-                ButtonType buttonTypeClose = new ButtonType("Jätka");
+                ButtonType buttonTypeSave = new ButtonType("Salvesta ja sulge programm");
+                ButtonType buttonTypeClose = new ButtonType("Sulge programm");
                 ButtonType buttonTypeCancel = new ButtonType("Katkesta");
 
                 alert.getButtonTypes().setAll(buttonTypeSave, buttonTypeClose, buttonTypeCancel);
@@ -263,6 +384,7 @@ public class App extends Application {
         });
 
         fileMenu.getItems().add(saveFile);
+        fileMenu.getItems().add(saveFiletoNewDestination);
         previewMenu.getItems().add(showPreview);
         menuBar.getMenus().add(fileMenu);
         menuBar.getMenus().add(previewMenu);
