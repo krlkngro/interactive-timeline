@@ -32,12 +32,16 @@ scriptContainer.parentNode.insertBefore(timelineDiv, scriptContainer)
 //Add modal box for pictures
 addModalBoxImg()
 
-//To get size of element, the element need to be rendered in the Dom.
+window.addEventListener('DOMContentLoaded', (event) => {
+    //To get size of element, the element need to be rendered in the Dom.
 //Add button and hide overflowing content.
-handleOverflowingContent()
+    handleOverflowingContent()
 
 //Pack or unpack events
-changePackUnpackStyleFirstTime()
+    changePackUnpackStyleFirstTime()
+});
+
+
 
 
 /*document.querySelector("img").addEventListener("load", function ()
@@ -229,7 +233,14 @@ function addModalBoxImg() {
 
 function handleOverflowingContent() {
     for (let [index, contentDiv] of document.querySelectorAll(".timelineContent").entries()) {
-        if (contentDiv.scrollHeight > contentHeight) {
+        let sum = 0
+
+        for (let i = 0; i< contentDiv.querySelectorAll("img").length; i++) {
+            sum = sum + contentDiv.querySelectorAll("img")[i].naturalHeight
+        }
+        sum = sum / 2
+        if (contentDiv.scrollHeight > contentHeight || sum > contentHeight) {
+            console.log()
             //console.log(contentDiv.scrollHeight)
             contentDiv.parentNode.insertBefore(addReadMore(data.events[index].htmlContent), contentDiv.nextSibling)
             contentDiv.style.height = contentHeight + 'px'
