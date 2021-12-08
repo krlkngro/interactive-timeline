@@ -3,6 +3,8 @@ module ee.ut {
     requires javafx.fxml;
     requires javafx.web;
     requires com.fasterxml.jackson.databind;
+    requires jdk.crypto.cryptoki;
+    requires jdk.crypto.ec;
 
     opens ee.ut to javafx.fxml;
     opens ee.ut.dataObjects to javafx.base, com.fasterxml.jackson.databind;
