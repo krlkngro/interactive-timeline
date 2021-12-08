@@ -74,7 +74,7 @@ public class EditorTest {
 
     @Test
     public void savingExistingEventSavesCorrectData() {
-        Event event = new Event(false, 99, "TestTest", "TestTestHtml", null, null);
+        Event event = new Event(false, 99, "TestTest", "TestTestHtml", null, null, null);
         Data data = new Data(Type.TEXT, 200,"Read more", new ArrayList<>(List.of(event)));
         Editor.saveEvent(
                 data,

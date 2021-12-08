@@ -32,6 +32,8 @@ import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static ee.ut.App.getData;
 import static ee.ut.logic.Editor.*;
@@ -178,7 +180,28 @@ public class EventsController implements Initializable {
                     htmlInput.setGraphic(null);
                     htmlInput.showAndWait();
                     if (htmlInput.getResult() != null && !htmlInput.getResult().equals("Sisesta video manustuskood")) {
-                        htmlEditor.setHtmlText(htmlEditor.getHtmlText().replace("</body>", "<p>" + htmlInput.getResult() + "</p></body>"));
+                        eventToEdit.getIframes().add(htmlInput.getResult());
+                        Pattern heightPattern = Pattern.compile("height=\"\\d+\"");
+                        Pattern widthPattern = Pattern.compile("width=\"\\d+\"");
+                        Pattern srcPattern = Pattern.compile("src=\".+?\"");
+                        int width = 300;
+                        int height = 150;
+                        String src = "";
+                        Matcher matcher = heightPattern.matcher(htmlInput.getResult());
+                        if (matcher.find()) {
+                            height = Integer.parseInt(matcher.group().substring(8, matcher.group().length()-1));
+                        }
+                        matcher = widthPattern.matcher(htmlInput.getResult());
+                        if (matcher.find()) {
+                            width = Integer.parseInt(matcher.group().substring(7, matcher.group().length()-1));
+                        }
+                        matcher = srcPattern.matcher(htmlInput.getResult());
+                        if (matcher.find()) {
+                            src = matcher.group().substring(5, matcher.group().length()-1);
+                        }
+                        System.out.println(height);
+                        System.out.println(width);
+                        htmlEditor.setHtmlText(htmlEditor.getHtmlText().replace("</body>", "<img id=\"iframe"+eventToEdit.getIframes().size()+"\" class=\"iframe\" src=\"https://via.placeholder.com/"+width+"x"+height+".png?text="+src+"\"></body>"));
                     }
                 });
                 htmlEditor.widthProperty().addListener(e -> {

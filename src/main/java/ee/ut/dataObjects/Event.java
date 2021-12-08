@@ -20,6 +20,8 @@ public class Event {
     private UUID uuid;
     @JsonIgnore
     private final List<URI> imagePaths;
+    @JsonIgnore
+    private final List<String> iframes;
 
 
     public Event() {
@@ -30,15 +32,17 @@ public class Event {
         this.packed = false;
         this.imagePaths = new ArrayList<>();
         this.uuid = UUID.randomUUID();
+        this.iframes = new ArrayList<>();
     }
 
-    public Event(Boolean packed, int queueNr, String label, String htmlContent, List<URI> imagePaths, UUID uuid) {
+    public Event(Boolean packed, int queueNr, String label, String htmlContent, List<URI> imagePaths, UUID uuid, List<String> iframes) {
         this.packed = packed;
         this.queueNr = queueNr;
         this.label = label;
         this.htmlContent = htmlContent;
         this.imagePaths = imagePaths;
         this.uuid = uuid;
+        this.iframes = iframes;
     }
 
 
@@ -83,4 +87,8 @@ public class Event {
     public Boolean getPacked() { return packed; }
 
     public void setPacked(Boolean packed) { this.packed = packed; }
+
+    public List<String> getIframes() {
+        return iframes;
+    }
 }
