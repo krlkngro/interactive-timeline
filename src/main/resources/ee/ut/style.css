@@ -203,7 +203,7 @@ p {
 .timelineContent  video, .timelineContent  iframe,
 .timelineModalContent img,
 .timelineModalContent  video, .timelineModalContent  iframe,
-.timelineEditor img, .timelineEditor video, .timelineEditor .iframe {
+.timelineEditor img, .timelineEditor video, .timelineEditor iframe {
     width: 640px;
     max-width: 100%;
     height: 360px;
