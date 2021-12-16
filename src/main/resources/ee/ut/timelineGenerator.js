@@ -53,7 +53,7 @@ const sendPostMessage = () => {
         window.parent.postMessage({
             frameHeight: heightTimeline
         }, '*');
-        console.log(heightTimeline)
+        //console.log(heightTimeline)
     }
 }
 
@@ -201,7 +201,7 @@ function changePackUnpackStyle(packDiv, contentDiv, className = packDiv.classNam
         packDiv.className = 'pack'
 
         for (let child of contentDiv.children) {
-            console.log(child.tagName)
+            //console.log(child.tagName)
             if (child.tagName === 'IMG' ||
                 (child.firstElementChild !== null && (child.firstElementChild.tagName === 'IMG'
                     || child.firstElementChild.className === 'timelineModal')) || child.tagName === 'BR') {
@@ -257,7 +257,7 @@ function handleOverflowingContent() {
         }
         sum = sum / 2
         if (contentDiv.scrollHeight > contentHeight || sum > contentHeight) {
-            console.log()
+            //console.log()
             //console.log(contentDiv.scrollHeight)
             contentDiv.parentNode.insertBefore(addReadMore(data.events[index].htmlContent), contentDiv.nextSibling)
             contentDiv.style.height = contentHeight + 'px'
