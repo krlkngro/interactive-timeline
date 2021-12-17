@@ -201,7 +201,7 @@ p {
 
 .timelineContent  img,
 .timelineModalContent img,
- .timelineEditor img {
+.timelineEditor img {
     max-width: 100%;
     height: auto;
     object-fit: contain;
@@ -223,7 +223,7 @@ p {
 }
 
 .timelineContent  video, .timelineContent  iframe
- {
+{
     width: 640px;
     max-width: 100%;
     height: 360px;
@@ -286,7 +286,7 @@ p {
     transform: translateY(-50%);
 }
 
-.pack, .unpack{
+.pack, .unpack, .packAll, .unpackAll{
     color: #1B365D;
     position: absolute;
     cursor: pointer;
@@ -308,7 +308,7 @@ p {
 
 @media only screen and (max-width: 640px) {
     .timeline {
-        top: 20px;
+        top: 50px;
         display: flex;
         flex-direction: column;
         margin-left: 20px;
@@ -350,5 +350,8 @@ p {
         z-index: 0;
     }
 
+    #packAll, #unpackAll {
+        top: -35px
+    }
 
 }

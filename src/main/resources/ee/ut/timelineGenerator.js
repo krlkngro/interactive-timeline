@@ -39,8 +39,23 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
 //Pack or unpack events
     changePackUnpackStyleFirstTime()
+    sendPostMessage()
 });
 
+//Resizing iframe
+window.onload = () => sendPostMessage();
+window.onresize = () => sendPostMessage();
+
+let heightTimeline = document.getElementsByClassName('timeline')[0].scrollHeight
+const sendPostMessage = () => {
+    if (heightTimeline !== document.getElementsByClassName('timeline')[0].scrollHeight) {
+        heightTimeline = document.getElementsByClassName('timeline')[0].scrollHeight;
+        window.parent.postMessage({
+            frameHeight: heightTimeline
+        }, '*');
+        //console.log(heightTimeline)
+    }
+}
 
 
 
@@ -125,7 +140,8 @@ function addPackUnpackButton(contentDiv, packed) {
 function addPackUnpackAllButton() {
     let packDiv = document.createElement("button");
     packDiv.textContent = '\u21D1'
-    packDiv.classList.add("pack")
+    packDiv.className = 'pack'
+    packDiv.id = "packAll"
 
     packDiv.onclick = function () {
 
@@ -136,9 +152,11 @@ function addPackUnpackAllButton() {
         if (packDiv.className === 'pack') {
             packDiv.textContent = '\u21D3'
             packDiv.className = 'unpack'
+            packDiv.id = "unpackAll"
         } else if (packDiv.className === 'unpack') {
             packDiv.textContent = '\u21D1'
             packDiv.className = 'pack'
+            packDiv.id = "packAll"
         }
     }
 
@@ -151,7 +169,6 @@ function changePackUnpackStyle(packDiv, contentDiv, className = packDiv.classNam
         contentDiv.style.height = 60 + 'px'
         packDiv.textContent = '\u21D3'
         packDiv.className = 'unpack'
-
 
         for (let child of contentDiv.children) {
             if (child.tagName === 'IMG' ||
@@ -184,7 +201,7 @@ function changePackUnpackStyle(packDiv, contentDiv, className = packDiv.classNam
         packDiv.className = 'pack'
 
         for (let child of contentDiv.children) {
-
+            //console.log(child.tagName)
             if (child.tagName === 'IMG' ||
                 (child.firstElementChild !== null && (child.firstElementChild.tagName === 'IMG'
                     || child.firstElementChild.className === 'timelineModal')) || child.tagName === 'BR') {
@@ -240,7 +257,7 @@ function handleOverflowingContent() {
         }
         sum = sum / 2
         if (contentDiv.scrollHeight > contentHeight || sum > contentHeight) {
-            console.log()
+            //console.log()
             //console.log(contentDiv.scrollHeight)
             contentDiv.parentNode.insertBefore(addReadMore(data.events[index].htmlContent), contentDiv.nextSibling)
             contentDiv.style.height = contentHeight + 'px'
