@@ -42,6 +42,8 @@ public class App extends Application {
     private static Stage previewStage;
     private static Stage mainStage;
 
+    private static final String originalUserDir = System.getProperty("user.dir")+ "\\result";
+
     @Override
     public void start(Stage stage) throws IOException {
         mainStage = stage;
@@ -51,10 +53,17 @@ public class App extends Application {
         Path resultFolder = Path.of(System.getProperty("user.dir"));
         if (!Files.exists(resultFolder)) {
             Files.createDirectory(resultFolder);
-            Files.write(resultFolder.resolve("style.css"), Objects.requireNonNull(App.class.getResourceAsStream("style.css")).readAllBytes());
-            Files.write(resultFolder.resolve("timeline.html"), Objects.requireNonNull(App.class.getResourceAsStream("timeline.html")).readAllBytes());
-            Files.write(resultFolder.resolve("timelineGenerator.js"), Objects.requireNonNull(App.class.getResourceAsStream("timelineGenerator.js")).readAllBytes());
         }
+        final var requiredFiles = new String[]{"style.css", "timeline.html", "timelineGenerator.js"};
+        Arrays.stream(requiredFiles).forEach(f -> {
+            if (!Files.exists(resultFolder.resolve(f))) {
+                try {
+                    Files.write(resultFolder.resolve(f), Objects.requireNonNull(App.class.getResourceAsStream(f)).readAllBytes());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         scene = new Scene(loadFXML("primary"), 640, 480);
 
         stage.setMinHeight(500);
@@ -72,6 +81,7 @@ public class App extends Application {
         Group root = new Group();
         if (isNew) {
             data = new Data();
+            System.setProperty("user.dir", originalUserDir);
         } else {
 
             FileChooser fileChooser = new FileChooser();
@@ -129,78 +139,11 @@ public class App extends Application {
         MenuBar menuBar = new MenuBar();
         Menu fileMenu = new Menu("Fail");
         MenuItem saveFile = new MenuItem("Salvesta ajajoon samasse kausta");
-        MenuItem saveFiletoNewDestination = new MenuItem("Salvesta uude kausta");
+        MenuItem saveFileToNewDestination = new MenuItem("Salvesta uude kausta");
         saveFile.setOnAction(event -> {
-
             Path resultFolder = Path.of(System.getProperty("user.dir"));
             Path file = resultFolder.resolve("data.js");
-            Path imageFolder = resultFolder.resolve("images");
-            try {
-                if (!imageFolder.toFile().exists()) {
-                    Files.createDirectories(imageFolder);
-                }
-                if (data.getEvents().stream().anyMatch(e -> e.getImagePaths().size() > 0)) {
-                    data.getEvents().forEach(e -> {
-                        try {
-                            Path eventImageFolder = imageFolder.resolve(e.getUuid().toString());
-                            if (!eventImageFolder.toFile().exists()) {
-                                Files.createDirectories(eventImageFolder);
-                            }
-                            AtomicInteger largestNumber = new AtomicInteger(
-                                    Arrays.stream(eventImageFolder.toFile().listFiles())
-                                            .map(imageFile -> Integer.parseInt(imageFile.getName().split("\\.")[0]))
-                                            .max(Integer::compareTo)
-                                            .orElse(0)
-                            );
-                            e.getImagePaths().forEach(path -> {
-                                try {
-                                    Path imageFilePath = Path.of(path);
-                                    Path savedImage = imageFilePath;
-                                    if (eventImageFolder.toUri().relativize(path).equals(path) && e.getHtmlContent().contains("src=\"" + path + "\"")) {
-                                        String fileName = imageFilePath.getFileName().toString();
-                                        savedImage = eventImageFolder.resolve(largestNumber.incrementAndGet() + (fileName.contains(".") ? fileName.substring(fileName.lastIndexOf(".")) : ""));
-                                        Files.copy(imageFilePath, savedImage, StandardCopyOption.REPLACE_EXISTING);
-                                    }
-                                    e.setHtmlContent(e.getHtmlContent().replaceFirst(path.toString(), "images/" + e.getUuid().toString() + "/" + savedImage.getFileName()));
-                                } catch (IOException ex) {
-                                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                    alert.setTitle("Teade");
-                                    alert.setHeaderText("Teade");
-                                    alert.setContentText("Piltide salvestamine ebaõnnestus.");
-                                    alert.show();
-                                    ex.printStackTrace();
-                                }
-                            });
-                            Arrays.stream(eventImageFolder.toFile().listFiles())
-                                    .filter(imageFile -> !e.getHtmlContent().contains("src=\"images/" + e.getUuid().toString() + "/" + imageFile.getName() + "\""))
-                                    .forEach(File::delete);
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
-                    });
-
-                }
-                Arrays.stream(imageFolder.toFile().listFiles()).filter(
-                        f -> data.getEvents().stream().noneMatch(e -> e.getUuid().toString().equals(f.getName()))
-                ).forEach(f -> {
-                    if (f.isDirectory()) {
-                        deleteDir(f);
-                    } else {
-                        f.delete();
-                    }
-                });
-                Files.writeString(file, "const data = " + new ObjectMapper().writeValueAsString(data));
-
-                scene.setRoot(loadFXML("primary"));
-                data = null;
-            } catch (IOException e) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Teade");
-                alert.setHeaderText("Teade");
-                alert.setContentText("Piltide salvestamine ebaõnnestus.");
-                alert.show();
-                e.printStackTrace();
-            }
+            saveTimeline(resultFolder, file);
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Teade");
             alert.setHeaderText("Teade");
@@ -208,13 +151,17 @@ public class App extends Application {
             alert.show();
         });
 
-        saveFiletoNewDestination.setOnAction(event -> {
+        saveFileToNewDestination.setOnAction(event -> {
 
             DirectoryChooser directoryChooser = new DirectoryChooser();
             directoryChooser.setTitle("Vali kaust kuhu ajajoon salvestada");
             directoryChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
             File folder = directoryChooser.showDialog(new Stage());
-            Path resultFolder = Path.of(String.valueOf(folder));
+            if (folder == null) {
+                return;
+            }
+            Path resultFolder = folder.toPath();
+            System.out.println(resultFolder);
             Path file = resultFolder.resolve("data.js");
             while (Files.exists(file)) {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -243,82 +190,7 @@ public class App extends Application {
                 }
             }
 
-            Path imageFolder = resultFolder.resolve("images");
-            try {
-                if (!imageFolder.toFile().exists()) {
-                    Files.createDirectories(imageFolder);
-                }
-                if (data.getEvents().stream().anyMatch(e -> e.getImagePaths().size() > 0)) {
-                    data.getEvents().forEach(e -> {
-                        try {
-                            Path eventImageFolder = imageFolder.resolve(e.getUuid().toString());
-                            if (!eventImageFolder.toFile().exists()) {
-                                Files.createDirectories(eventImageFolder);
-                            }
-                            AtomicInteger largestNumber = new AtomicInteger(
-                                    Arrays.stream(eventImageFolder.toFile().listFiles())
-                                            .map(imageFile -> Integer.parseInt(imageFile.getName().split("\\.")[0]))
-                                            .max(Integer::compareTo)
-                                            .orElse(0)
-                            );
-                            e.getImagePaths().forEach(path -> {
-                                try {
-                                    Path imageFilePath = Path.of(path);
-                                    Path savedImage = imageFilePath;
-                                    if (eventImageFolder.toUri().relativize(path).equals(path) && e.getHtmlContent().contains("src=\"" + path + "\"")) {
-                                        String fileName = imageFilePath.getFileName().toString();
-                                        savedImage = eventImageFolder.resolve(largestNumber.incrementAndGet() + (fileName.contains(".") ? fileName.substring(fileName.lastIndexOf(".")) : ""));
-                                        Files.copy(imageFilePath, savedImage, StandardCopyOption.REPLACE_EXISTING);
-                                    }
-                                    e.setHtmlContent(e.getHtmlContent().replaceFirst(path.toString(), "images/" + e.getUuid().toString() + "/" + savedImage.getFileName()));
-                                } catch (IOException ex) {
-                                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                    alert.setTitle("Teade");
-                                    alert.setHeaderText("Teade");
-                                    alert.setContentText("Piltide salvestamine ebaõnnestus.");
-                                    alert.show();
-                                    ex.printStackTrace();
-                                }
-                            });
-                            Arrays.stream(eventImageFolder.toFile().listFiles())
-                                    .filter(imageFile -> !e.getHtmlContent().contains("src=\"images/" + e.getUuid().toString() + "/" + imageFile.getName() + "\""))
-                                    .forEach(File::delete);
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
-                    });
-
-                }
-                Arrays.stream(imageFolder.toFile().listFiles()).filter(
-                        f -> data.getEvents().stream().noneMatch(e -> e.getUuid().toString().equals(f.getName()))
-                ).forEach(f -> {
-                    if (f.isDirectory()) {
-                        deleteDir(f);
-                    } else {
-                        f.delete();
-                    }
-                });
-                Files.writeString(file, "const data = " + new ObjectMapper().writeValueAsString(data));
-                Path currentFolder = Path.of(System.getProperty("user.dir"));
-                if (!currentFolder.equals(resultFolder)) {
-                    Files.copy(currentFolder.resolve("style.css"), resultFolder.resolve("style.css"), StandardCopyOption.REPLACE_EXISTING);
-                    Files.copy(currentFolder.resolve("timeline.html"), resultFolder.resolve("timeline.html"), StandardCopyOption.REPLACE_EXISTING);
-                    Files.copy(currentFolder.resolve("timelineGenerator.js"), resultFolder.resolve("timelineGenerator.js"), StandardCopyOption.REPLACE_EXISTING);
-
-                    //Set working folder to new save folder
-                    System.setProperty("user.dir", currentFolder.toAbsolutePath().toString());
-                }
-
-                scene.setRoot(loadFXML("primary"));
-                data = null;
-            } catch (IOException e) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Teade");
-                alert.setHeaderText("Teade");
-                alert.setContentText("Piltide salvestamine ebaõnnestus.");
-                alert.show();
-                e.printStackTrace();
-            }
+            saveTimeline(resultFolder, file);
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Teade");
             alert.setHeaderText("Teade");
@@ -384,7 +256,7 @@ public class App extends Application {
         });
 
         fileMenu.getItems().add(saveFile);
-        fileMenu.getItems().add(saveFiletoNewDestination);
+        fileMenu.getItems().add(saveFileToNewDestination);
         previewMenu.getItems().add(showPreview);
         menuBar.getMenus().add(fileMenu);
         menuBar.getMenus().add(previewMenu);
@@ -396,6 +268,96 @@ public class App extends Application {
         //borderPane.setBottom(scrollPane);
         root.getChildren().add(borderPane);
         scene.setRoot(root);
+    }
+
+    private static void saveTimeline(Path resultFolder, Path dataFile) {
+        Path imageFolder = resultFolder.resolve("images");
+        try {
+            saveImages(imageFolder);
+            Files.writeString(dataFile, "const data = " + new ObjectMapper().writeValueAsString(data));
+            Path currentFolder = Path.of(System.getProperty("user.dir"));
+            if (!currentFolder.equals(resultFolder)) {
+                Files.copy(currentFolder.resolve("style.css"), resultFolder.resolve("style.css"), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(currentFolder.resolve("timeline.html"), resultFolder.resolve("timeline.html"), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(currentFolder.resolve("timelineGenerator.js"), resultFolder.resolve("timelineGenerator.js"), StandardCopyOption.REPLACE_EXISTING);
+            }
+            scene.setRoot(loadFXML("primary"));
+            data = null;
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setResizable(true);
+            alert.setTitle("Teade");
+            alert.setHeaderText("Teade");
+            alert.setContentText("Ajajoone salvestamine ebaõnnestus. Viga oli: " + e.getClass().getSimpleName() + ": " + e.getMessage() + "\nStacktrace: " + Arrays.stream(e.getStackTrace()).map(StackTraceElement::toString).reduce("", (x, y) -> x+"\n"+y));
+            alert.getDialogPane().setMinWidth(1000);
+            alert.show();
+            e.printStackTrace();
+        }
+    }
+
+    private static void saveImages(Path imageFolder) throws IOException {
+        if (!imageFolder.toFile().exists()) {
+            Files.createDirectories(imageFolder);
+        }
+        if (data.getEvents().stream().anyMatch(e -> e.getImagePaths().size() > 0)) {
+            data.getEvents().forEach(e -> {
+                try {
+                    Path eventImageFolder = imageFolder.resolve(e.getUuid().toString());
+                    if (!eventImageFolder.toFile().exists()) {
+                        Files.createDirectories(eventImageFolder);
+                    }
+                    AtomicInteger largestNumber = new AtomicInteger(
+                            Arrays.stream(eventImageFolder.toFile().listFiles())
+                                    .map(imageFile -> Integer.parseInt(imageFile.getName().split("\\.")[0]))
+                                    .max(Integer::compareTo)
+                                    .orElse(0)
+                    );
+                    e.getImagePaths().forEach(path -> {
+                        try {
+                            Path imageFilePath = Path.of(path);
+                            Path savedImage = imageFilePath;
+                            if (eventImageFolder.toUri().relativize(path).equals(path) && e.getHtmlContent().contains("src=\"" + path + "\"")) {
+                                String fileName = imageFilePath.getFileName().toString();
+                                savedImage = eventImageFolder.resolve(largestNumber.incrementAndGet() + (fileName.contains(".") ? fileName.substring(fileName.lastIndexOf(".")) : ""));
+                                Files.copy(imageFilePath, savedImage, StandardCopyOption.REPLACE_EXISTING);
+                            }
+                            e.setHtmlContent(e.getHtmlContent().replaceFirst(path.toString(), "images/" + e.getUuid().toString() + "/" + savedImage.getFileName()));
+                        } catch (IOException ex) {
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setResizable(true);
+                            alert.setTitle("Teade");
+                            alert.setHeaderText("Teade");
+                            alert.setContentText("Pildi salvestamine ebaõnnestus. Viga oli: " + ex.getClass().getSimpleName() + ": " + ex.getMessage() + "\nStacktrace: " + Arrays.stream(ex.getStackTrace()).map(StackTraceElement::toString).reduce("", (x, y) -> x+"\n"+y));
+                            alert.getDialogPane().setMinWidth(1000);
+                            alert.show();
+                            ex.printStackTrace();
+                        }
+                    });
+                    Arrays.stream(eventImageFolder.toFile().listFiles())
+                            .filter(imageFile -> !e.getHtmlContent().contains("src=\"images/" + e.getUuid().toString() + "/" + imageFile.getName() + "\""))
+                            .forEach(File::delete);
+                } catch (IOException ex) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setResizable(true);
+                    alert.setTitle("Teade");
+                    alert.setHeaderText("Teade");
+                    alert.setContentText("Piltide salvestamisel tekkis viga. Viga oli: " + ex.getClass().getSimpleName() + ": " + ex.getMessage() + "\nStacktrace: " + Arrays.stream(ex.getStackTrace()).map(StackTraceElement::toString).reduce("", (x, y) -> x+"\n"+y));
+                    alert.getDialogPane().setMinWidth(1000);
+                    alert.show();
+                    ex.printStackTrace();
+                }
+            });
+
+        }
+        Arrays.stream(imageFolder.toFile().listFiles()).filter(
+                f -> data.getEvents().stream().noneMatch(e -> e.getUuid().toString().equals(f.getName()))
+        ).forEach(f -> {
+            if (f.isDirectory()) {
+                deleteDir(f);
+            } else {
+                f.delete();
+            }
+        });
     }
 
     public static void updatePreview() {
