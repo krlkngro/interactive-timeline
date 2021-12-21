@@ -295,7 +295,7 @@ public class App extends Application {
         }
     }
 
-    private static boolean saveImages(Path imageFolder) throws IOException {
+    private static void saveImages(Path imageFolder) throws IOException {
         if (!imageFolder.toFile().exists()) {
             Files.createDirectories(imageFolder);
         }
