@@ -42,6 +42,8 @@ public class App extends Application {
     private static Stage previewStage;
     private static Stage mainStage;
 
+    private static final String originalUserDir = System.getProperty("user.dir")+ "\\result";
+
     @Override
     public void start(Stage stage) throws IOException {
         mainStage = stage;
@@ -79,6 +81,7 @@ public class App extends Application {
         Group root = new Group();
         if (isNew) {
             data = new Data();
+            System.setProperty("user.dir", originalUserDir);
         } else {
 
             FileChooser fileChooser = new FileChooser();
