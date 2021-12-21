@@ -51,10 +51,17 @@ public class App extends Application {
         Path resultFolder = Path.of(System.getProperty("user.dir"));
         if (!Files.exists(resultFolder)) {
             Files.createDirectory(resultFolder);
-            Files.write(resultFolder.resolve("style.css"), Objects.requireNonNull(App.class.getResourceAsStream("style.css")).readAllBytes());
-            Files.write(resultFolder.resolve("timeline.html"), Objects.requireNonNull(App.class.getResourceAsStream("timeline.html")).readAllBytes());
-            Files.write(resultFolder.resolve("timelineGenerator.js"), Objects.requireNonNull(App.class.getResourceAsStream("timelineGenerator.js")).readAllBytes());
         }
+        final var requiredFiles = new String[]{"style.css", "timeline.html", "timelineGenerator.js"};
+        Arrays.stream(requiredFiles).forEach(f -> {
+            if (!Files.exists(resultFolder.resolve(f))) {
+                try {
+                    Files.write(resultFolder.resolve(f), Objects.requireNonNull(App.class.getResourceAsStream(f)).readAllBytes());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         scene = new Scene(loadFXML("primary"), 640, 480);
 
         stage.setMinHeight(500);
