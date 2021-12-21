@@ -285,15 +285,17 @@ public class App extends Application {
             data = null;
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setResizable(true);
             alert.setTitle("Teade");
             alert.setHeaderText("Teade");
-            alert.setContentText("Ajajoone salvestamine ebaõnnestus. Viga oli: " + e.getMessage() + "\nStacktrace: " + Arrays.toString(e.getStackTrace()));
+            alert.setContentText("Ajajoone salvestamine ebaõnnestus. Viga oli: " + e.getClass().getSimpleName() + ": " + e.getMessage() + "\nStacktrace: " + Arrays.stream(e.getStackTrace()).map(StackTraceElement::toString).reduce("", (x, y) -> x+"\n"+y));
+            alert.getDialogPane().setMinWidth(1000);
             alert.show();
             e.printStackTrace();
         }
     }
 
-    private static void saveImages(Path imageFolder) throws IOException {
+    private static boolean saveImages(Path imageFolder) throws IOException {
         if (!imageFolder.toFile().exists()) {
             Files.createDirectories(imageFolder);
         }
@@ -322,9 +324,11 @@ public class App extends Application {
                             e.setHtmlContent(e.getHtmlContent().replaceFirst(path.toString(), "images/" + e.getUuid().toString() + "/" + savedImage.getFileName()));
                         } catch (IOException ex) {
                             Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setResizable(true);
                             alert.setTitle("Teade");
                             alert.setHeaderText("Teade");
-                            alert.setContentText("Piltide salvestamine ebaõnnestus. Viga oli: " + ex.getMessage() + "\nStacktrace: " + Arrays.toString(ex.getStackTrace()));
+                            alert.setContentText("Pildi salvestamine ebaõnnestus. Viga oli: " + ex.getClass().getSimpleName() + ": " + ex.getMessage() + "\nStacktrace: " + Arrays.stream(ex.getStackTrace()).map(StackTraceElement::toString).reduce("", (x, y) -> x+"\n"+y));
+                            alert.getDialogPane().setMinWidth(1000);
                             alert.show();
                             ex.printStackTrace();
                         }
@@ -334,9 +338,11 @@ public class App extends Application {
                             .forEach(File::delete);
                 } catch (IOException ex) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setResizable(true);
                     alert.setTitle("Teade");
                     alert.setHeaderText("Teade");
-                    alert.setContentText("Piltide salvestamine ebaõnnestus. Viga oli: " + ex.getMessage() + "\nStacktrace: " + Arrays.toString(ex.getStackTrace()));
+                    alert.setContentText("Piltide salvestamisel tekkis viga. Viga oli: " + ex.getClass().getSimpleName() + ": " + ex.getMessage() + "\nStacktrace: " + Arrays.stream(ex.getStackTrace()).map(StackTraceElement::toString).reduce("", (x, y) -> x+"\n"+y));
+                    alert.getDialogPane().setMinWidth(1000);
                     alert.show();
                     ex.printStackTrace();
                 }
